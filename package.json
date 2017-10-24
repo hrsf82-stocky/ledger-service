@@ -1,0 +1,19 @@
+{
+  "name": "ledger-service",
+  "version": "1.0.0",
+  "description": "Ledger Service for MacD Project",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hrsf82-stocky/ledger-service.git"
+  },
+  "author": "Kenny Cao",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hrsf82-stocky/ledger-service/issues"
+  },
+  "homepage": "https://github.com/hrsf82-stocky/ledger-service#readme"
+}
