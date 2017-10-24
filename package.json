@@ -4,7 +4,10 @@
   "description": "Ledger Service for MacD Project",
   "main": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server/index.js",
+    "dev-start": "nodemon server/index.js",
+    "lint": "eslint ./",
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -15,5 +18,22 @@
   "bugs": {
     "url": "https://github.com/hrsf82-stocky/ledger-service/issues"
   },
-  "homepage": "https://github.com/hrsf82-stocky/ledger-service#readme"
+  "homepage": "https://github.com/hrsf82-stocky/ledger-service#readme",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "body-parser": "^1.18.2",
+    "elasticsearch": "^13.3.1",
+    "express": "^4.16.2",
+    "morgan": "^1.9.0",
+    "pg": "^7.3.0",
+    "pgtest": "^0.2.2",
+    "sequelize": "^4.17.2"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "eslint": "^4.9.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "mocha": "^4.0.1"
+  }
 }
