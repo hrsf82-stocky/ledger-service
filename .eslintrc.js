@@ -13,7 +13,8 @@ module.exports = {
     "mocha": true
   },
   "rules": {
-    "comma-dangle": ["error", "never"]
+    "comma-dangle": ["error", "never"],
+    "no-console": 0
   }
 };
 
