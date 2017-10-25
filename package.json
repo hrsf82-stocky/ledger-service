@@ -5,9 +5,9 @@
   "main": "",
   "scripts": {
     "start": "node server/index.js",
-    "dev-start": "nodemon server/index.js",
+    "dev-start": "nodemon --ignore server/index.js",
     "lint": "eslint ./",
-    "test": "mocha"
+    "test": "mocha --reporter nyan --recursive --exit test ; RES=$?; kill %1; exit $RES"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
     "elasticsearch": "^13.3.1",
     "express": "^4.16.2",
     "morgan": "^1.9.0",
+    "path": "^0.12.7",
     "pg": "^7.3.0",
     "pgtest": "^0.2.2",
     "sequelize": "^4.17.2"
@@ -35,6 +36,7 @@
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.8.0",
     "mocha": "^4.0.1",
-    "request": "^2.83.0"
+    "request": "^2.83.0",
+    "supertest": "^3.0.0"
   }
 }
