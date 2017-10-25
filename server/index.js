@@ -9,7 +9,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 app.get('/', (req, res) => {
-  res.send('Hello - Server is UP!');
+  res.status(200).json('Hello World');
 });
 
 app.listen(process.env.PORT || 8888, (err) => {
