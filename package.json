@@ -2,23 +2,26 @@
   "name": "ledger-service",
   "version": "1.0.0",
   "description": "Ledger Service for MacD Project",
-  "main": "",
-  "scripts": {
-    "start": "node server/index.js",
-    "dev-start": "nodemon --ignore server/index.js",
-    "lint": "eslint ./",
-    "test": "mocha --reporter nyan --recursive --exit test ; RES=$?; kill %1; exit $RES"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hrsf82-stocky/ledger-service.git"
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=6.11.1"
   },
   "author": "Kenny Cao",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/hrsf82-stocky/ledger-service/issues"
   },
-  "homepage": "https://github.com/hrsf82-stocky/ledger-service#readme",
+  "homepage": "https://github.com/hrsf82-stocky/ledger-service#readme",  
+  "scripts": {
+    "start": "node server/index.js",
+    "dev-start": "nodemon --ignore server/index.js",
+    "lint": "eslint ./",
+    "test": "mocha --reporter nyan --recursive --exit test; RES=$?; kill %1; exit $RES"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hrsf82-stocky/ledger-service.git"
+  },
   "dependencies": {
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
