@@ -6,17 +6,17 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-const port = process.env.PORT || 2244;
+app.use(morgan('dev'));
 
 app.get('/', (req, res) => {
-  res.send('Hello, world!');
+  res.send('Hello - Server is UP!');
 });
 
-app.listen(port, () => {
-  console.log('Listening on port 2244');
+app.listen(process.env.PORT || 8888, (err) => {
+  if (err) {
+    console.error('cannot connect to the server');
+  }
+  console.log(`listening on ${process.env.PORT || 8888}`);
 });
 
-module.exports = {
-  app
-};
+module.exports = app;
