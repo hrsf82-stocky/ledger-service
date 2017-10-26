@@ -1,12 +1,12 @@
 const { Pool } = require('pg');
-const { USER, PASSWORD } = require('../config.js');
+const { PGHOST, PGUSER, PGPW, PGDATABASE, PGPORT } = require('../config.js');
 
 const pool = new Pool({
-  host: 'localhost',
-  database: 'prices',
-  user: USER,
-  password: PASSWORD,
-  port: 5432,
+  host: PGHOST,
+  database: PGDATABASE,
+  user: PGUSER,
+  password: PGPW,
+  port: PGPORT,
   max: 20
 });
 
@@ -17,10 +17,10 @@ pool.on('error', (err, client) => {
   process.exit(-1);
 });
 
-// pool.query('SELECT * from EURUSD ORDER BY dt DESC LIMIT 10', (err, res) => {
-//   console.log(err, res);
-//   pool.end();
-// });
+pool.query('SELECT * from EURUSD ORDER BY dt DESC LIMIT 10', (err, res) => {
+  console.log(err, res);
+  pool.end();
+});
 
 
 module.exports = {

@@ -17,7 +17,8 @@ module.exports = {
     "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
     "no-console": 0,
     "no-shadow": 0,
-    "new-cap": [2, {"capIsNewExceptions": ["Immutable.Map", "Immutable.Set", "Immutable.List"]}]
+    "new-cap": [2, {"capIsNewExceptions": ["Immutable.Map", "Immutable.Set", "Immutable.List"]}],
+    "object-curly-newline": ["error", { "multiline": true, "minProperties": 8 }]
   }
 };
 
