@@ -5,6 +5,7 @@ config/staging.json
 config/test.json
 config.js
 config.json
+EURUSD-Sample-Prices.csv
 
 # OS X
 .DS_Store
