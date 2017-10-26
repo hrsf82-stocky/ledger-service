@@ -11,7 +11,7 @@
   "bugs": {
     "url": "https://github.com/hrsf82-stocky/ledger-service/issues"
   },
-  "homepage": "https://github.com/hrsf82-stocky/ledger-service#readme",  
+  "homepage": "https://github.com/hrsf82-stocky/ledger-service#readme",
   "scripts": {
     "start": "node server/index.js",
     "dev-start": "nodemon --ignore server/index.js",
@@ -23,6 +23,7 @@
     "url": "git+https://github.com/hrsf82-stocky/ledger-service.git"
   },
   "dependencies": {
+    "aws-sdk": "^2.140.0",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "elasticsearch": "^13.3.1",

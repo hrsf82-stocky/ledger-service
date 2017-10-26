@@ -15,7 +15,9 @@ module.exports = {
   "rules": {
     "comma-dangle": ["error", "never"],
     "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
-    "no-console": 0
+    "no-console": 0,
+    "no-shadow": 0,
+    "new-cap": [2, {"capIsNewExceptions": ["Immutable.Map", "Immutable.Set", "Immutable.List"]}]
   }
 };
 
