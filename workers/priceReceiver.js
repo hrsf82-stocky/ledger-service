@@ -1,12 +1,8 @@
-// Load the AWS SDK for Node.js
 const AWS = require('aws-sdk');
-// Load credentials and set the region from the JSON file
+const { PriceQueueURL } = require('../config.js');
+
 AWS.config.loadFromPath('../config.json');
-
-// Create an SQS service object
 const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
-
-const queueURL = 'https://sqs.us-west-1.amazonaws.com/287396276472/SQS_PRICES_QUEUE';
 
 const params = {
   AttributeNames: [
@@ -16,14 +12,14 @@ const params = {
   MessageAttributeNames: [
     'All'
   ],
-  QueueUrl: queueURL,
-  VisibilityTimeout: 0,
-  WaitTimeSeconds: 0
+  QueueUrl: PriceQueueURL,
+  VisibilityTimeout: 120,
+  WaitTimeSeconds: 20
 };
 
 sqs.receiveMessage(params, (err, data) => {
   if (err) {
-    console.log('Receive Error', err);
+    console.error('Receive Error', err);
   } else {
     console.log(data);
     console.log(data.Messages[0].Attributes);
@@ -32,12 +28,12 @@ sqs.receiveMessage(params, (err, data) => {
 
     // if (data.Messages) {
     //   const deleteParams = {
-    //     QueueUrl: queueURL,
+    //     QueueUrl: PriceQueueURL,
     //     ReceiptHandle: data.Messages[0].ReceiptHandle
     //   };
     //   sqs.deleteMessage(deleteParams, (err, data) => {
     //     if (err) {
-    //       console.log('Delete Error', err);
+    //       console.error('Delete Error', err);
     //     } else {
     //       console.log('Message Deleted', data);
     //     }

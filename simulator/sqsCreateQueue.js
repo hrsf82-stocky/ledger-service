@@ -10,7 +10,8 @@ const params = {
   QueueName: 'SQS_PRICES_QUEUE',
   Attributes: {
     DelaySeconds: '60',
-    MessageRetentionPeriod: '86400'
+    MessageRetentionPeriod: '86400',
+    ReceiveMessageWaitTimeSeconds: '20'
   }
 };
 
@@ -21,3 +22,12 @@ sqs.createQueue(params, (err, data) => {
     console.log('Success', data.QueueUrl);
   }
 });
+
+// List Existing Queue URLS
+// sqs.listQueues({}, (err, data) => {
+//   if (err) {
+//     console.log('Error', err);
+//   } else {
+//     console.log('Success', data.QueueUrls);
+//   }
+// });

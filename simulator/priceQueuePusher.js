@@ -2,60 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const csv = require('csv');
 const AWS = require('aws-sdk');
+const { PriceQueueURL } = require('../config.js');
 
 AWS.config.loadFromPath('../config.json');
 
-const csvFilePath = path.join(__dirname, '/EURUSD-Sample-Prices.csv');
 const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
-
-// List Existing Queue URLS
-// sqs.listQueues({}, (err, data) => {
-//   if (err) {
-//     console.log('Error', err);
-//   } else {
-//     console.log('Success', data.QueueUrls);
-//   }
-// });
-
-// const params = {
-//   DelaySeconds: 10,
-//   MessageAttributes: {
-//     time: {
-//       DataType: 'String',
-//       StringValue: '2017-10-01 21:00:06.101000'
-//     },
-//     instrument: {
-//       DataType: 'String',
-//       StringValue: 'EURUSD'
-//     },
-//     bid: {
-//       DataType: 'Number',
-//       StringValue: '1.13015'
-//     },
-//     ask: {
-//       DataType: 'Number',
-//       StringValue: '1.13028'
-//     },
-//     bid_vol: {
-//       DataType: 'Number',
-//       StringValue: '750000'
-//     },
-//     ask_vol: {
-//       DataType: 'Number',
-//       StringValue: '1500000'
-//     }
-//   },
-//   MessageBody: 'Sample Data',
-//   QueueUrl: 'https://sqs.us-west-1.amazonaws.com/287396276472/SQS_PRICES_QUEUE'
-// };
-
-// sqs.sendMessage(params, (err, data) => {
-//   if (err) {
-//     console.log('Error', err);
-//   } else {
-//     console.log('Success', data.MessageId);
-//   }
-// });
+const csvFilePath = path.join(__dirname, '/EURUSD-Sample-Prices.csv');
 
 const parseCVSPrices = (path, callback) => {
   const options = {
@@ -79,7 +31,63 @@ const parseCVSPrices = (path, callback) => {
     });
 };
 
+const pushNewPrice = ({ time, instrument, bid, ask, bid_vol, ask_vol }, done) => {
+  const params = {
+    DelaySeconds: 0,
+    MessageAttributes: {
+      time: {
+        DataType: 'String',
+        StringValue: time
+      },
+      instrument: {
+        DataType: 'String',
+        StringValue: instrument || 'EURUSD'
+      },
+      bid: {
+        DataType: 'Number',
+        StringValue: bid
+      },
+      ask: {
+        DataType: 'Number',
+        StringValue: ask
+      },
+      bid_vol: {
+        DataType: 'Number',
+        StringValue: bid_vol
+      },
+      ask_vol: {
+        DataType: 'Number',
+        StringValue: ask_vol
+      }
+    },
+    MessageBody: 'Sample Data',
+    QueueUrl: PriceQueueURL
+  };
 
-parseCVSPrices(csvFilePath, (priceData) => {
-  console.log(priceData);
-});
+  sqs.sendMessage(params, (err, data) => {
+    if (err) {
+      console.log('Error', err);
+    } else {
+      console.log('Price Queue - Message Sent Success', data.MessageId);
+    }
+    done(err, data);
+  });
+};
+
+const runPricePusher = (done) => {
+  parseCVSPrices(csvFilePath, (priceData) => {
+    let i = 0;
+
+    setInterval(() => {
+      console.log(priceData[i]);
+      pushNewPrice(priceData[i], () => {
+        i += 1;
+        if (i === priceData.length) {
+          done();
+        }
+      });
+    }, 1000);
+  });
+};
+
+runPricePusher(() => console.log('Finished pushing all price data'));
