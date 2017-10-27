@@ -1,12 +1,12 @@
-DROP TABLE IF EXISTS EURUSD;
+DROP TABLE IF EXISTS eurusd;
 
-CREATE TABLE EURUSD (
+CREATE TABLE eurusd (
   dt timestamp without time zone NOT NULL,
   bid numeric NOT NULL,
   ask numeric NOT NULL,
   bid_vol bigint,
   ask_vol bigint,
-  CONSTRAINT "PKey" PRIMARY KEY (dt)  
+  CONSTRAINT "eurusd_pkey" PRIMARY KEY (dt)  
 );
 
 -- SET DateStyle = 'ISO,YMD';
