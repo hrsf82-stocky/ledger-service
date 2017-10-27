@@ -9,7 +9,7 @@ const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
 const params = {
   QueueName: 'SQS_PRICES_QUEUE',
   Attributes: {
-    DelaySeconds: '60',
+    DelaySeconds: '0',
     MessageRetentionPeriod: '86400',
     ReceiveMessageWaitTimeSeconds: '20'
   }
