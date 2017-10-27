@@ -51,9 +51,10 @@ const app = Consumer.create({
   waitTimeSeconds: 15,
   sqs: new AWS.SQS(),
   handleMessage: (message, done) => {
-    console.log(message);
-    console.log(message.Messages[0].Attributes);
-    console.log(message.Messages[0].MessageAttributes);
+    console.log(message.MessageId);
+    console.log(JSON.parse(message.Body));
+    // console.log(message.Attributes);
+    // console.log(message.MessageAttributes);
 
     done();
   }

@@ -31,7 +31,17 @@ const parseCVSPrices = (path, callback) => {
     });
 };
 
-const pushNewPrice = ({ time, instrument, bid, ask, bid_vol, ask_vol }, done) => {
+const transformPriceDataTypes = ({ time, bid, ask, bid_vol, ask_vol }) => ({
+  time,
+  bid: parseFloat(bid),
+  ask: parseFloat(ask),
+  bid_vol: parseInt(bid_vol, 10),
+  ask_vol: parseInt(ask_vol, 10)
+});
+
+const pushNewPrice = ({ instrument, time, bid, ask, bid_vol, ask_vol }, done) => {
+  const payload = transformPriceDataTypes({ time, bid, ask, bid_vol, ask_vol });
+
   const params = {
     DelaySeconds: 0,
     MessageAttributes: {
@@ -60,7 +70,7 @@ const pushNewPrice = ({ time, instrument, bid, ask, bid_vol, ask_vol }, done) =>
         StringValue: ask_vol
       }
     },
-    MessageBody: 'Sample Data',
+    MessageBody: JSON.stringify({ payload }),
     QueueUrl: PriceQueueURL
   };
 
@@ -73,6 +83,7 @@ const pushNewPrice = ({ time, instrument, bid, ask, bid_vol, ask_vol }, done) =>
     done(err, data);
   });
 };
+
 
 const runPricePusher = (done) => {
   parseCVSPrices(csvFilePath, (priceData) => {
