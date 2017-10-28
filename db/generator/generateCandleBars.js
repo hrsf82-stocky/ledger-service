@@ -1,6 +1,20 @@
 const axios = require('axios');
 const { OandaAPIkey } = require('../../config.js');
 const db = require('../index.js');
+const Promise = require('bluebird');
+
+const pairIdMapping = {
+  EUR_USD: 1,
+  GBP_USD: 2,
+  USD_CAD: 3,
+  USD_CHF: 4,
+  USD_JPY: 5,
+  EUR_GBP: 6,
+  EUR_CHF: 7,
+  AUD_USD: 8,
+  EUR_JPY: 9,
+  GBP_JPY: 10
+};
 
 const generateRandomVols = () => {
   const bidVol = parseInt(((1 + (Math.random() * 5)).toFixed(2)) * 100000, 10);
@@ -12,10 +26,8 @@ const formatCandlesData = (candles, pairId) => {
   const output = [];
   let bidVol;
   let askVol;
-
   for (let i = 0; i < candles.length; i += 1) {
     [bidVol, askVol] = generateRandomVols();
-
     output.push([
       candles[i].time,
       candles[i].bid.h,
@@ -32,43 +44,44 @@ const formatCandlesData = (candles, pairId) => {
       pairId
     ]);
   }
-
-  // console.log(output);
   return output;
 };
 
-const oandaApiUrl = 'https://api-fxpractice.oanda.com/v3/instruments/EUR_USD/candles';
-const oandaParams = {
-  count: null,
-  from: '2017-10-17T15:00:00.000000000Z',
-  price: 'BA',
-  granularity: 'S5'
+const fetchOandaPairCandles = (pair, count, from, price = 'BA', granularity = 'S5') => {
+  const url = `https://api-fxpractice.oanda.com/v3/instruments/${pair}/candles`;
+  const params = { count, from, price, granularity };
+  const headers = { Authorization: OandaAPIkey };
+  return axios.get(url, { params, headers })
+    .then(res => res.data.candles)
+    .catch(console.error);
 };
 
-axios({
-  method: 'get',
-  responseType: 'json',
-  url: oandaApiUrl,
-  params: oandaParams,
-  headers: { Authorization: OandaAPIkey }
-})
-  .then((res) => {
-    // console.log(res.data);
-    const arr = formatCandlesData(res.data.candles, 1)[0];
-    console.log(arr);
-    const params = arr.map((item, idx) => `$${(idx + 1)}`);
-    const query = `INSERT INTO 
-      s5bars(dt, bid_h, bid_l, bid_o, bid_c, bid_v, ask_h, ask_l, ask_o, ask_c, ask_v, ticks, id_pairs) 
-      VALUES (${params.join(',')})`;
-    console.log(params);
-    console.log(query);
-    db.query(query, arr, (err, res) => {
-      if (err) {
-        console.log(err);
-      }
-      console.log(res);
-    });
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+// fetchOandaPairCandles('USD_CAD', 5000, '2017-09-01T00:00:00.000000000Z')
+//   .then(res => console.log(res));
+
+const loadBulkMajorPairsCandles = from => (
+  Promise.map(Object.keys(pairIdMapping), pair => fetchOandaPairCandles(pair, 5000, from, 'BA', 'S5'))
+    .then(pairsCandles => pairsCandles.map((ele, i) => formatCandlesData(ele, i + 1)))
+    .then(formattedPairsCandles => Promise.map(formattedPairsCandles, db.insertBulkOHLC))
+    .then(results => console.log('Bulk inserted all major pairs 5sec OHLC data.'))
+    .catch(console.error)
+);
+
+const loadMonthlyData = (year, month, day) => {
+  let dayStr;
+  if (day > 30) return;
+  if (day < 10) {
+    dayStr = '0' + day.toString();
+  } else {
+    dayStr = day.toString();
+  }
+  loadBulkMajorPairsCandles(`${year}-${month}-${dayStr}T12:00:00.000000000Z`)
+    .then((results) => {
+      console.log(`2017-${month}-${dayStr} - 50000 data points of 5sec OHLC inserted to db`);
+      loadMonthlyData(year, month, day + 1);
+    })
+    .catch(console.error);
+};
+
+loadMonthlyData('2017', '08', 1);
+
