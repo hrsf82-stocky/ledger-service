@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS s5bars CASCADE;
 
 -- SET DateStyle = 'ISO,YMD';
 
--- COPY EURUSD FROM '/Users/Kenny/Dropbox/Code/javascript/HRSF82/projects/MacD/prices/EURUSD-2017_07_01-2017_10_24.csv' CSV;  
+-- COPY EURUSD FROM '/Users/Kenny/Dropbox/Code/javascript/HRSF82/projects/MacD/prices/EURUSD-2017_10_01-2017_10_24.csv' CSV;  
 
 CREATE TABLE pairs (
   id serial NOT NULL,

@@ -19,7 +19,8 @@ module.exports = {
     "no-shadow": 0,
     "new-cap": [2, {"capIsNewExceptions": ["Immutable.Map", "Immutable.Set", "Immutable.List"]}],
     "object-curly-newline": ["error", { "multiline": true, "minProperties": 8 }],
-    "no-unused-vars": ["error", { "args": "none" }]
+    "no-unused-vars": ["error", { "args": "none" }],
+    "prefer-template": 0
   }
 };
 

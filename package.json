@@ -33,7 +33,9 @@
     "morgan": "^1.9.0",
     "path": "^0.12.7",
     "pg": "^7.3.0",
+    "pg-copy-streams": "^1.2.0",
     "pg-format": "^1.0.4",
+    "pg-hstore": "^2.3.2",
     "pgtest": "^0.2.2",
     "sequelize": "^4.17.2",
     "sqs-consumer": "^3.7.0"
