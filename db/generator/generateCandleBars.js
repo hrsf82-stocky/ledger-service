@@ -56,9 +56,6 @@ const fetchOandaPairCandles = (pair, count, from, price = 'BA', granularity = 'S
     .catch(console.error);
 };
 
-// fetchOandaPairCandles('USD_CAD', 5000, '2017-09-01T00:00:00.000000000Z')
-//   .then(res => console.log(res));
-
 const loadBulkMajorPairsCandles = from => (
   Promise.map(Object.keys(pairIdMapping), pair => fetchOandaPairCandles(pair, 5000, from, 'BA', 'S5'))
     .then(pairsCandles => pairsCandles.map((ele, i) => formatCandlesData(ele, i + 1)))
@@ -75,7 +72,7 @@ const loadMonthlyData = (year, month, day) => {
   } else {
     dayStr = day.toString();
   }
-  loadBulkMajorPairsCandles(`${year}-${month}-${dayStr}`)
+  loadBulkMajorPairsCandles(new Date(Date.UTC(year, month - 1, day, 0, 0, 0)).toISOString())
     .then((results) => {
       console.log(`2017-${month}-${dayStr} - 50000 data points of 5sec OHLC inserted to db`);
       loadMonthlyData(year, month, day + 1);
@@ -83,5 +80,5 @@ const loadMonthlyData = (year, month, day) => {
     .catch(console.error);
 };
 
-loadMonthlyData('2017', '06', 1);
+loadMonthlyData(2017, 5, 1);
 

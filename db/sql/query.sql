@@ -33,7 +33,7 @@
 
 WITH intervals AS (
   SELECT start, start + interval '1hour' AS end
-  FROM generate_series('2017-07-01 12:00', '2017-10-27 12:00', interval '1 hour') AS start)
+  FROM generate_series(current_date - interval '3 month', current_date, interval '1 hour') AS start)
 SELECT DISTINCT
   intervals.start AS date,
   min(bid_l) OVER w AS bid_low,
