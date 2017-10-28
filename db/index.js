@@ -7,7 +7,7 @@ const pool = new Pool({
   user: PGUSER,
   password: PGPW,
   port: PGPORT,
-  max: 20
+  max: 25
 });
 
 // the pool with emit an error on behalf of any idle clients
@@ -17,10 +17,10 @@ pool.on('error', (err, client) => {
   process.exit(-1);
 });
 
-pool.query('SELECT * from EURUSD ORDER BY dt DESC LIMIT 10', (err, res) => {
-  console.log(err, res);
-  pool.end();
-});
+// pool.query('SELECT * from EURUSD ORDER BY dt DESC LIMIT 10', (err, res) => {
+//   console.log(err, res);
+//   pool.end();
+// });
 
 
 module.exports = {
@@ -28,7 +28,7 @@ module.exports = {
     const start = Date.now();
     return pool.query(text, params, (err, res) => {
       const duration = Date.now() - start;
-      console.log('executed query', { text, duration, rows: res.rowCount });
+      console.log('executed query', { text, duration, rows: res ? res.rowCount : null });
       callback(err, res);
     });
   }
