@@ -69,7 +69,7 @@ const loadBulkMajorPairsCandles = from => (
 
 const loadMonthlyData = (year, month, day) => {
   let dayStr;
-  if (day > 30) return;
+  if (day > 31) return;
   if (day < 10) {
     dayStr = '0' + day.toString();
   } else {
@@ -83,5 +83,5 @@ const loadMonthlyData = (year, month, day) => {
     .catch(console.error);
 };
 
-loadMonthlyData('2017', '08', 1);
+loadMonthlyData('2017', '07', 1);
 
