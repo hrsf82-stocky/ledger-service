@@ -37,6 +37,7 @@
     "pg-format": "^1.0.4",
     "pg-hstore": "^2.3.2",
     "pgtest": "^0.2.2",
+    "redis": "^2.8.0",
     "sequelize": "^4.17.2",
     "sqs-consumer": "^3.7.0"
   },
