@@ -39,12 +39,6 @@ const insertOHLC = (data) => {
       return res;
     })
     .catch(console.error);
-
-  // pool.query(query, data, (err, res) => {
-  //   pool.end();
-  //   if (err) console.error(err);
-  //   cb(err, res);
-  // });
 };
 
 const insertBulkOHLC = bulkData => (
@@ -87,6 +81,8 @@ const insertBulkOHLC = bulkData => (
       .catch(console.error);
   })
 );
+
+
 
 
 module.exports = {

@@ -75,7 +75,7 @@ const loadMonthlyData = (year, month, day) => {
   } else {
     dayStr = day.toString();
   }
-  loadBulkMajorPairsCandles(`${year}-${month}-${dayStr}T12:00:00.000000000Z`)
+  loadBulkMajorPairsCandles(`${year}-${month}-${dayStr}`)
     .then((results) => {
       console.log(`2017-${month}-${dayStr} - 50000 data points of 5sec OHLC inserted to db`);
       loadMonthlyData(year, month, day + 1);
@@ -83,5 +83,5 @@ const loadMonthlyData = (year, month, day) => {
     .catch(console.error);
 };
 
-loadMonthlyData('2017', '07', 1);
+loadMonthlyData('2017', '06', 1);
 
