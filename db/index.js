@@ -3,7 +3,6 @@ const { Readable } = require('stream');
 const copyFrom = require('pg-copy-streams').from;
 const { PGHOST, PGUSER, PGPW, PGDATABASE, PGPORT } = require('../config.js');
 
-
 const pool = new Pool({
   host: PGHOST,
   database: PGDATABASE,
@@ -22,23 +21,39 @@ pool.on('error', (err, client) => {
   process.exit(-1);
 });
 
-// pool.query('SELECT * from EURUSD ORDER BY dt DESC LIMIT 10', (err, res) => {
-//   console.log(err, res);
-//   pool.end();
-// });
-
-const insertOHLC = (data) => {
-  const params = data.map((_, idx) => `$${(idx + 1)}`);
-  const query = `INSERT INTO 
-    s5bars(dt, bid_h, bid_l, bid_o, bid_c, bid_v, ask_h, ask_l, ask_o, ask_c, ask_v, ticks, id_pairs)
-    VALUES (${params.join(',')})`;
-
-  return pool.query(query, data)
+// query decorator that with an approximate timer
+const queryTimer = (query, params) => {
+  const start = Date.now();
+  return pool.query(query, params)
     .then((res) => {
       pool.end();
+      const duration = Date.now() - start;
+      console.log('executed query', { query, duration, rowCount: res ? res.rowCount : null });
+      // TODO: Send the query data to Elasticsearch
       return res;
     })
     .catch(console.error);
+};
+
+const findPair = (name) => {
+  const query = 'SELECT * FROM pairs WHERE name = $1';
+  return queryTimer(query, [name]);
+};
+
+const insertPair = (name, isMajor) => {
+  const query = `INSERT INTO 
+    pairs (name, major, base, quote)
+    VALUES ($1, $2, $3, $4) RETURNING *`;
+  const params = [name, isMajor, name.slice(0, 3), name.slice(3, 6)];
+  return queryTimer(query, params);
+};
+
+const insertOHLC = (rowData) => {
+  const subs = rowData.map((_, idx) => `$${(idx + 1)}`);
+  const query = `INSERT INTO 
+    s5bars (dt, bid_h, bid_l, bid_o, bid_c, bid_v, ask_h, ask_l, ask_o, ask_c, ask_v, ticks, id_pairs)
+    VALUES (${subs.join(',')}) RETURNING *`;
+  return queryTimer(query, rowData);
 };
 
 const insertBulkOHLC = bulkData => (
@@ -82,12 +97,17 @@ const insertBulkOHLC = bulkData => (
   })
 );
 
-
-
+// insertOHLC(['2001-09-28 01:00:00', 1.33, 1.44, 1.55, 1.77, 133322, 1.66, 1.22, 1.76, 1.88, 223333, 123322, 12])
+//   .then(res => console.log(res.rows[0]));
+// findPair('EURUSD').then(res => console.log(res.rows[0]));
+// insertPair('CNYMXN', false).then(res => console.log(res.rows[0]));
 
 module.exports = {
+  findPair,
+  insertPair,
   insertOHLC,
   insertBulkOHLC,
+  queryTimer,
   query: (text, params, callback) => {
     const start = Date.now();
     return pool.query(text, params, (err, res) => {
