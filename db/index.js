@@ -1,11 +1,11 @@
 const { Pool } = require('pg');
 const { Readable } = require('stream');
 const copyFrom = require('pg-copy-streams').from;
-const { PGHOST, PGUSER, PGPW, PGDATABASE, PGPORT } = require('../config.js');
+const { PGHOST, PGUSER, PGPW, PGDB, PGPORT } = require('../config.js');
 
 const pool = new Pool({
   host: PGHOST,
-  database: PGDATABASE,
+  database: PGDB,
   user: PGUSER,
   password: PGPW,
   port: PGPORT,
@@ -22,7 +22,7 @@ pool.on('error', (err, client) => {
 });
 
 // query decorator that with an approximate timer
-const queryTimer = (query, params) => {
+const queryTimer = (query, params = []) => {
   const start = Date.now();
   return pool.query(query, params)
     .then((res) => {
@@ -35,24 +35,50 @@ const queryTimer = (query, params) => {
     .catch(console.error);
 };
 
+const updateRowById = (table, id, colVals) => {
+  const cols = Object.keys(colVals);
+  const dollars = cols.map((_, idx) => `$${(idx + 1)}`);
+  const values = cols.map(key => colVals[key]);
+  const query = `UPDATE ${table}
+    SET (${cols.join(', ')}) = (${dollars.join(', ')})
+    WHERE id = ${id} 
+    RETURNING *`;
+  return queryTimer(query, values);
+};
+
+/**
+ * pairs table helpers
+ */
 const findPair = (name) => {
   const query = 'SELECT * FROM pairs WHERE name = $1';
   return queryTimer(query, [name]);
 };
 
+const findAllPairs = () => {
+  const query = 'SELECT * FROM pairs';
+  return queryTimer(query, []);
+};
+
 const insertPair = (name, isMajor) => {
   const query = `INSERT INTO 
     pairs (name, major, base, quote)
-    VALUES ($1, $2, $3, $4) RETURNING *`;
+    VALUES ($1, $2, $3, $4) 
+    RETURNING *`;
   const params = [name, isMajor, name.slice(0, 3), name.slice(3, 6)];
   return queryTimer(query, params);
 };
 
+const updatePairById = (id, colVals) => (updateRowById('pairs', id, colVals));
+
+/**
+ * s5bars table helpers
+ */
 const insertOHLC = (rowData) => {
   const subs = rowData.map((_, idx) => `$${(idx + 1)}`);
   const query = `INSERT INTO 
     s5bars (dt, bid_h, bid_l, bid_o, bid_c, bid_v, ask_h, ask_l, ask_o, ask_c, ask_v, ticks, id_pairs)
-    VALUES (${subs.join(',')}) RETURNING *`;
+    VALUES (${subs.join(',')}) 
+    RETURNING *`;
   return queryTimer(query, rowData);
 };
 
@@ -97,6 +123,7 @@ const insertBulkOHLC = bulkData => (
   })
 );
 
+// findAllPairs().then(console.log);
 // insertOHLC(['2001-09-28 01:00:00', 1.33, 1.44, 1.55, 1.77, 133322, 1.66, 1.22, 1.76, 1.88, 223333, 123322, 12])
 //   .then(res => console.log(res.rows[0]));
 // findPair('EURUSD').then(res => console.log(res.rows[0]));
@@ -107,6 +134,8 @@ module.exports = {
   insertPair,
   insertOHLC,
   insertBulkOHLC,
+  updatePairById,
+  findAllPairs,
   queryTimer,
   query: (text, params, callback) => {
     const start = Date.now();
