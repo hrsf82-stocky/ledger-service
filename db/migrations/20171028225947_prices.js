@@ -1,13 +1,13 @@
 exports.up = (knex, Promise) => {
   return knex.schema
-    .createTable('pairs', (table) => {
+    .createTableIfNotExists('pairs', (table) => {
       table.increments('id').primary();
       table.string('name', 6).notNullable().unique();
       table.boolean('major').notNullable();
       table.string('base', 3).notNullable();
       table.string('quote', 3).notNullable();
     })
-    .createTable('ticks', (table) => {
+    .createTableIfNotExists('ticks', (table) => {
       table.increments('id').primary();
       table.timestamp('dt').notNullable();
       table.decimal('bid', 10, 6).notNullable();
@@ -17,7 +17,7 @@ exports.up = (knex, Promise) => {
       table.integer('id_pairs').unsigned().notNullable();
       table.foreign('id_pairs').references('id').inTable('pairs').onDelete('cascade');
     })
-    .createTable('s5bars', (table) => {
+    .createTableIfNotExists('s5bars', (table) => {
       table.increments('id').primary();
       table.timestamp('dt').notNullable();
       table.decimal('bid_h', 10, 6).notNullable();
