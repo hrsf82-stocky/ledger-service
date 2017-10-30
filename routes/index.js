@@ -6,7 +6,7 @@ const candles = require('../controllers/candlesController');
 
 /* API V1 routes */
 router.get('/', (req, res, next) => {
-  res.render('index', { title: 'Express' });
+  res.json({ message: 'Ledger Service - API V1' });
 });
 
 // Pairs Routes
@@ -21,7 +21,7 @@ router.post('/ticks', ticks.post);
 router.delete('/ticks/:id', ticks.delete);
 router.patch('/ticks/:id', ticks.patch);
 
-// Candle Routes
+// Candles Routes
 router.get('/candles/:id', candles.get);
 router.post('/candles', candles.post);
 router.delete('/candles/:id', candles.delete);
