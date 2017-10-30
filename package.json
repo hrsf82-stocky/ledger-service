@@ -2,9 +2,9 @@
   "name": "ledger-service",
   "version": "1.0.0",
   "description": "Ledger Service for MacD Project",
-  "main": "server/index.js",
+  "main": "index.js",
   "engines": {
-    "node": ">=6.11.1"
+    "node": ">=8.1.0"
   },
   "author": "Kenny Cao",
   "license": "MIT",
@@ -13,8 +13,8 @@
   },
   "homepage": "https://github.com/hrsf82-stocky/ledger-service#readme",
   "scripts": {
-    "start": "node ./bin/www",
-    "dev-start": "nodemon --ignore server/index.js",
+    "start": "node index.js",
+    "dev-start": "nodemon --ignore index.js",
     "lint": "eslint ./",
     "test": "mocha --reporter nyan --recursive --exit test; RES=$?; kill %1; exit $RES"
   },
@@ -32,7 +32,6 @@
     "debug": "^3.1.0",
     "elasticsearch": "^13.3.1",
     "express": "^4.16.2",
-    "jade": "^1.11.0",
     "knex": "^0.13.0",
     "morgan": "^1.9.0",
     "path": "^0.12.7",
@@ -43,7 +42,6 @@
     "pgtest": "^0.2.2",
     "redis": "^2.8.0",
     "sequelize": "^4.17.2",
-    "serve-favicon": "^2.4.5",
     "sqs-consumer": "^3.7.0"
   },
   "devDependencies": {
