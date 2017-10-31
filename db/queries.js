@@ -11,7 +11,7 @@ const getAllPairs = () => {
   return pairs().select().catch(console.error);
 };
 
-const getSinglePair = ({ id, name }) => {
+const getPair = ({ id, name }) => {
   if (id !== undefined) {
     return pairs().where('id', parseInt(id, 10)).first().catch(console.error);
   }
@@ -45,7 +45,7 @@ const deletePairById = (id) => {
 
 module.exports = {
   getAllPairs,
-  getSinglePair,
+  getPair,
   addPair,
   updatePairById,
   deletePairById

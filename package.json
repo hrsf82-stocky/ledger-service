@@ -14,7 +14,7 @@
   "homepage": "https://github.com/hrsf82-stocky/ledger-service#readme",
   "scripts": {
     "start": "node index.js",
-    "dev-start": "nodemon --ignore index.js",
+    "dev-start": "nodemon --ignore tests/ index.js",
     "lint": "eslint ./",
     "test": "mocha --reporter nyan --recursive --exit test; RES=$?; kill %1; exit $RES"
   },
