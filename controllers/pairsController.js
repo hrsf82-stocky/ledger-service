@@ -1,10 +1,19 @@
+const queries = require('../db/queries');
+
 module.exports = {
   get: (req, res) => {
-    // models.messages.get(function(error, messages) {
-    //   res.status(error ? 400 : 200).send(messages);
-    // });
+    const pairID = req.query.id;
+
+    if (pairID !== undefined) {
+      queries.getPair({ id: pairID })
+        .then(pair => res.status(200).json(pair));
+    } else {
+      queries.getAllPairs()
+        .then(pairs => res.status(200).json(pairs));
+    }
   },
   post: (req, res) => {
+    
     // models.messages.post(req.body, function(error, results) {
     //   res.status(error ? 400 : 201).send();
     // });

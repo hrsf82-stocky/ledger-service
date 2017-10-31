@@ -10,19 +10,19 @@ router.get('/', (req, res, next) => {
 });
 
 // Pairs Routes
-router.get('/pairs/:id', pairs.get);
+router.get('/pairs', pairs.get);
 router.post('/pairs', pairs.post);
 router.delete('/pairs/:id', pairs.delete);
 router.patch('/pairs/:id', pairs.patch);
 
 // Ticks Routes
-router.get('/ticks/:id', ticks.get);
+router.get('/ticks', ticks.get);
 router.post('/ticks', ticks.post);
 router.delete('/ticks/:id', ticks.delete);
 router.patch('/ticks/:id', ticks.patch);
 
 // Candles Routes
-router.get('/candles/:id', candles.get);
+router.get('/candles', candles.get);
 router.post('/candles', candles.post);
 router.delete('/candles/:id', candles.delete);
 router.patch('/candles/:id', candles.patch);
