@@ -2,19 +2,20 @@ const moment = require('moment');
 const Promise = require('bluebird');
 const knex = require('./knex');
 
+// References to Postgres tables
 const pairs = () => knex('pairs');
 const ticks = () => knex('ticks');
 const s5bars = () => knex('s5bars');
 
 
-// General helper functions
+// General Helper Functions
 const isValidDateTime = (timestamp) => {
   return moment(timestamp, moment.ISO_8601, true).isValid();
 };
 
 
 /**
- * pairs table helper functions
+ * Pairs Table Helper Functions
  */
 const getAllPairs = () => {
   return pairs().select();
@@ -40,9 +41,8 @@ const addPair = ({ name, major = false }) => {
 
 const updatePairById = (id, updates) => {
   if (id === undefined) {
-    return Promise.reject(new Error('pairID needs to be provided'));
+    return Promise.reject(new Error('Pair ID not provided'));
   }
-
   return pairs()
     .where('id', parseInt(id, 10))
     .update(updates)
@@ -51,25 +51,22 @@ const updatePairById = (id, updates) => {
 
 const deletePairById = (id) => {
   if (id === undefined) {
-    return Promise.reject(new Error('pairID needs to be provided'));
+    return Promise.reject(new Error('Pair ID not provided'));
   }
-
   return pairs().where('id', parseInt(id, 10)).del();
 };
 
 
 /**
- * ticks table helper functions
+ * Ticks Table Helper Functions
  */
 const getTicksByTimeRangeAndPairID = ({ pairID, start, end }) => {
   if (pairID === undefined) {
-    return Promise.reject(new Error('pairID needs to be provided'));
+    return Promise.reject(new Error('Pair ID not provided'));
   }
-
   if ((start && !isValidDateTime(start)) || (end && !isValidDateTime(end))) {
-    return Promise.reject(new TypeError('Not valid start or end timestamp input'));
+    return Promise.reject(new TypeError('Invalid start or end timestamp input'));
   }
-
   // return all ticks data for a pair if no start timestamp is provided
   if (!start) {
     return ticks().where('id_pairs', pairID);
@@ -82,7 +79,28 @@ const getTicksByTimeRangeAndPairID = ({ pairID, start, end }) => {
   return ticks().where('id_pairs', pairID).whereBetween('dt', [start, end]);
 };
 
-// const getTickById
+const addTick = ({ dt, bid, ask, bid_vol, ask_vol, id_pairs }) => {
+  return ticks()
+    .insert({ dt, bid, ask, bid_vol, ask_vol, id_pairs })
+    .returning('*');
+};
+
+const updateTickById = (id, updates) => {
+  if (id === undefined) {
+    return Promise.reject(new Error('Tick ID not provided'));
+  }
+  return ticks()
+    .where('id', parseInt(id, 10))
+    .update(updates)
+    .returning('*');
+};
+
+const deleteTickById = (id) => {
+  if (id === undefined) {
+    return Promise.reject(new Error('Tick ID not provided'));
+  }
+  return ticks().where('id', parseInt(id, 10)).del();
+};
 
 module.exports = {
   getAllPairs,
@@ -90,5 +108,8 @@ module.exports = {
   addPair,
   updatePairById,
   deletePairById,
-  getTicksByTimeRangeAndPairID
+  getTicksByTimeRangeAndPairID,
+  addTick,
+  updateTickById,
+  deleteTickById
 };
