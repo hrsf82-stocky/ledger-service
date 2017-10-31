@@ -47,13 +47,18 @@ module.exports = {
       .catch(err => errorHandler(req, res, 400, err));
   },
   delete: (req, res) => {
-    // models.messages.post(req.body, function(error, results) {
-    //   res.status(error ? 400 : 201).send();
-    // });
+    const s5barID = req.params.id;
+
+    queries.deleteS5BarsById(s5barID)
+      .then(result => res.status(200).json(result))
+      .catch(err => errorHandler(req, res, 400, err));
   },
   patch: (req, res) => {
-    // models.messages.post(req.body, function(error, results) {
-    //   res.status(error ? 400 : 201).send();
-    // });
+    const s5barID = req.params.id;
+    const updates = req.body;
+
+    queries.updateS5BarsById(s5barID, updates)
+      .then(updatedBar => res.status(200).json(updatedBar))
+      .catch(err => errorHandler(req, res, 400, err));
   }
 };

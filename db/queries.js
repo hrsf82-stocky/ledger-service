@@ -7,7 +7,6 @@ const pairs = () => knex('pairs');
 const ticks = () => knex('ticks');
 const s5bars = () => knex('s5bars');
 
-
 // General Helper Functions
 const isValidDateTime = (timestamp) => {
   return moment(timestamp, moment.ISO_8601, true).isValid();
@@ -125,14 +124,26 @@ const getS5BarsByTimeRangeAndPairID = ({ pairID, start, end }) => {
   return s5bars().where('id_pairs', pairID).whereBetween('dt', [start, end]);
 };
 
-const addS5Bar = ({
-  dt, ticks, id_pairs,
-  bid_h, bid_l, bid_o, bid_c, bid_v,
-  ask_h, ask_l, ask_o, ask_c, ask_v }) => {
+const addS5Bar = (rowData) => {
+  const {
+    dt,
+    ticks,
+    id_pairs,
+    bid_h,
+    bid_l,
+    bid_o,
+    bid_c,
+    bid_v,
+    ask_h,
+    ask_l,
+    ask_o,
+    ask_c,
+    ask_v } = rowData;
+
   if (Date.parse(dt) % 5000 !== 0) {
     return Promise.reject(new RangeError('dt is not in 5 second interval'));
   }
-  
+
   return s5bars()
     .insert({
       dt,
@@ -151,6 +162,24 @@ const addS5Bar = ({
     .returning('*');
 };
 
+const updateS5BarsById = (id, updates) => {
+  if (id === undefined) {
+    return Promise.reject(new Error('s5bars ID not provided'));
+  }
+  return s5bars()
+    .where('id', parseInt(id, 10))
+    .update(updates)
+    .returning('*');
+};
+
+const deleteS5BarsById = (id) => {
+  if (id === undefined) {
+    return Promise.reject(new Error('s5bars ID not provided'));
+  }
+  return s5bars().where('id', parseInt(id, 10)).del();
+};
+
+
 module.exports = {
   getAllPairs,
   getPair,
@@ -162,5 +191,7 @@ module.exports = {
   updateTickById,
   deleteTickById,
   getS5BarsByTimeRangeAndPairID,
-  addS5Bar
+  addS5Bar,
+  updateS5BarsById,
+  deleteS5BarsById
 };
