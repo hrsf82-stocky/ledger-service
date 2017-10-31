@@ -9,14 +9,14 @@ module.exports = {
         .then(pair => res.status(200).json(pair))
         .catch((err) => {
           console.error(err);
-          res.status(404).json(err);
+          res.status(404).json({ message: err.message, error: err });
         });
     } else {
       queries.getAllPairs()
         .then(pairs => res.status(200).json(pairs))
         .catch((err) => {
           console.error(err);
-          res.status(404).json(err);
+          res.status(404).json({ message: err.message, error: err });
         });
     }
   },
@@ -28,7 +28,7 @@ module.exports = {
       .then(newPair => res.status(201).json(newPair))
       .catch((err) => {
         console.error(err);
-        res.status(400).json(err);
+        res.status(400).json({ message: err.message, error: err });
       });
   },
 
@@ -39,7 +39,7 @@ module.exports = {
       .then(result => res.status(200).json(result))
       .catch((err) => {
         console.error(err);
-        res.status(400).json(err);
+        res.status(400).json({ message: err.message, error: err });
       });
   },
 
@@ -52,7 +52,7 @@ module.exports = {
       .then(updatedPair => res.status(200).json(updatedPair))
       .catch((err) => {
         console.error(err);
-        res.status(400).json(err);
+        res.status(400).json({ message: err.message, error: err });
       });
   }
 };
