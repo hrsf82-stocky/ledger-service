@@ -31,13 +31,13 @@ describe('Server Specs', () => {
     });
   });
 
-  describe('GET /test', () => {
-    it('should return 200 status code and matching response ', (done) => {
+  describe('GET /', () => {
+    it('should return 404 status code', (done) => {
       request(server)
-        .get('/test')
-        .expect(200)
+        .get('/')
+        .expect(404)
         .expect((res) => {
-          expect(res.body).to.be.equal('Hello World Test');
+          expect(res.body.message).to.be.equal('Not Found');
         })
         .end(done);
     });
