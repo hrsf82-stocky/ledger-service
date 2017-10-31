@@ -9,7 +9,7 @@ module.exports = {
   get: (req, res) => {
     const { pairID, start, end } = req.query;
 
-    queries.getTicksByTimeRangeAndPairID({ pairID, start, end })
+    queries.getTicksByTimeRangeAndPairId({ pairID, start, end })
       .then(data => res.status(200).json(data))
       .catch(err => errorHandler(req, res, 404, err));
   },

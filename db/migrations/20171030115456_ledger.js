@@ -16,6 +16,7 @@ exports.up = (knex, Promise) => {
       table.bigInteger('ask_vol').notNullable();
       table.integer('id_pairs').unsigned().notNullable();
       table.foreign('id_pairs').references('id').inTable('pairs').onDelete('cascade');
+      table.unique(['dt', 'id_pairs']);
     })
     .createTableIfNotExists('s5bars', (table) => {
       table.increments('id').primary();
@@ -33,7 +34,7 @@ exports.up = (knex, Promise) => {
       table.integer('ticks').notNullable();
       table.integer('id_pairs').unsigned().notNullable();
       table.foreign('id_pairs').references('id').inTable('pairs').onDelete('cascade');
-      table.index(['dt', 'id_pairs'], 'idx_s5bars_idpairs_and_dt', 'btree');
+      table.unique(['dt', 'id_pairs']);
     });
 };
 

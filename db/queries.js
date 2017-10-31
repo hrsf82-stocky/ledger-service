@@ -60,7 +60,7 @@ const deletePairById = (id) => {
 /**
  * Ticks Table Helper Functions
  */
-const getTicksByTimeRangeAndPairID = ({ pairID, start, end }) => {
+const getTicksByTimeRangeAndPairId = ({ pairID, start, end }) => {
   if (pairID === undefined) {
     return Promise.reject(new Error('Pair ID not provided'));
   }
@@ -102,14 +102,65 @@ const deleteTickById = (id) => {
   return ticks().where('id', parseInt(id, 10)).del();
 };
 
+
+/**
+ * s5bars (5 second OHLC) Table Helper Functions
+ */
+const getS5BarsByTimeRangeAndPairID = ({ pairID, start, end }) => {
+  if (pairID === undefined) {
+    return Promise.reject(new Error('Pair ID not provided'));
+  }
+  if ((start && !isValidDateTime(start)) || (end && !isValidDateTime(end))) {
+    return Promise.reject(new TypeError('Invalid start or end timestamp input'));
+  }
+  // return all s5bars data for a pair if no start timestamp is provided
+  if (!start) {
+    return s5bars().where('id_pairs', pairID);
+  }
+  // return s5bars data from start date to current timestamp if no end date is provided
+  if (start && !end) {
+    return s5bars().where('id_pairs', pairID).andWhere('dt', '>', start);
+  }
+  // return s5bars data between start and end timestamp
+  return s5bars().where('id_pairs', pairID).whereBetween('dt', [start, end]);
+};
+
+const addS5Bar = ({
+  dt, ticks, id_pairs,
+  bid_h, bid_l, bid_o, bid_c, bid_v,
+  ask_h, ask_l, ask_o, ask_c, ask_v }) => {
+  if (Date.parse(dt) % 5000 !== 0) {
+    return Promise.reject(new RangeError('dt is not in 5 second interval'));
+  }
+  
+  return s5bars()
+    .insert({
+      dt,
+      ticks,
+      id_pairs,
+      bid_h,
+      bid_l,
+      bid_o,
+      bid_c,
+      bid_v,
+      ask_h,
+      ask_l,
+      ask_o,
+      ask_c,
+      ask_v })
+    .returning('*');
+};
+
 module.exports = {
   getAllPairs,
   getPair,
   addPair,
   updatePairById,
   deletePairById,
-  getTicksByTimeRangeAndPairID,
+  getTicksByTimeRangeAndPairId,
   addTick,
   updateTickById,
-  deleteTickById
+  deleteTickById,
+  getS5BarsByTimeRangeAndPairID,
+  addS5Bar
 };
