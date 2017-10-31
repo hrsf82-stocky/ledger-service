@@ -24,7 +24,15 @@ module.exports = {
     "prefer-template": 0,
     "no-path-concat": 0,
     "arrow-body-style": 0
-  }
+  },
+  "overrides": [
+    {
+      "files": "*spec.js",
+      "rules": {
+          "no-unused-expressions": 0
+      }
+    }
+  ]
 };
 
 /**

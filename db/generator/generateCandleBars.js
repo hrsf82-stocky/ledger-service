@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { OandaAPIkey } = require('../../config.js');
-const db = require('../index.js');
+const db = require('../pg-client.js');
 const Promise = require('bluebird');
 
 const pairIdMapping = {
