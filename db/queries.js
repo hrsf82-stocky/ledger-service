@@ -8,38 +8,36 @@ const s5bars = () => knex('s5bars');
  * pairs table helper functions
  */
 const getAllPairs = () => {
-  return pairs().select().catch(console.error);
+  return pairs().select();
 };
 
 const getPair = ({ id, name }) => {
   if (id !== undefined) {
-    return pairs().where('id', parseInt(id, 10)).first().catch(console.error);
+    return pairs().where('id', parseInt(id, 10)).first();
   }
-  return pairs().where('name', name).first().catch(console.error);
+  return pairs().where('name', name).first();
 };
 
-const addPair = ({ name, isMajor }) => {
+const addPair = ({ name, major = false }) => {
   return pairs()
     .insert({
       name,
-      major: isMajor,
+      major,
       base: name.slice(0, 3),
       quote: name.slice(3, 6)
     })
-    .returning('*')
-    .catch(console.error);
+    .returning('*');
 };
 
 const updatePairById = (id, updates) => {
   return pairs()
     .where('id', parseInt(id, 10))
     .update(updates)
-    .returning('*')
-    .catch(console.error);
+    .returning('*');
 };
 
 const deletePairById = (id) => {
-  return pairs().where('id', parseInt(id, 10)).del().catch(console.error);
+  return pairs().where('id', parseInt(id, 10)).del();
 };
 
 
