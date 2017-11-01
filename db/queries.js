@@ -101,6 +101,9 @@ const deleteTickById = (id) => {
   return ticks().where('id', parseInt(id, 10)).del();
 };
 
+const getTicksByIds = (ids) => {
+  return ticks().whereIn('id', ids);
+};
 
 /**
  * s5bars (5 second OHLC) Table Helper Functions
@@ -182,13 +185,19 @@ const deleteS5BarsById = (id) => {
 /**
  * Materialized Views for s5bars (5 second OHLC) Table Helper Functions
  */
+// const addMviewByPairName = (pair, interval, length = '1 year') => {
+//   if (!pair || !interval) {
+//     return Promise.reject(new Error('pair name or interval not provided'));
+//   }
 
+// };
 
 module.exports = {
   getAllPairs,
   getPair,
   addPair,
   updatePairById,
+  getTicksByIds,
   deletePairById,
   getTicksByTimeRangeAndPairId,
   addTick,
@@ -197,5 +206,5 @@ module.exports = {
   getS5BarsByTimeRangeAndPairID,
   addS5Bar,
   updateS5BarsById,
-  deleteS5BarsById
+  deleteS5BarsById,
 };

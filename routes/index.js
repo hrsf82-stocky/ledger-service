@@ -3,6 +3,7 @@ const router = require('express').Router();
 const ticks = require('../controllers/ticksController');
 const pairs = require('../controllers/pairsController');
 const candles = require('../controllers/candlesController');
+const mviews = require('../controllers/mviewsController');
 
 /* API V1 routes */
 router.get('/', (req, res, next) => {
@@ -26,5 +27,11 @@ router.get('/candles', candles.get);
 router.post('/candles', candles.post);
 router.delete('/candles/:id', candles.delete);
 router.patch('/candles/:id', candles.patch);
+
+// Materialized Views Routes
+router.get('/mviews', mviews.get);
+router.post('/mviews', mviews.post);
+router.delete('/mviews/:name', mviews.delete);
+router.patch('/mviews/:name', mviews.patch);
 
 module.exports = router;

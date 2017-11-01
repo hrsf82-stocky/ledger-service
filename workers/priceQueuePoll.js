@@ -65,3 +65,5 @@ app.on('error', (err) => {
 });
 
 app.start();
+
+module.exports = app;
