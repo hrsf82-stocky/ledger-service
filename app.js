@@ -32,10 +32,12 @@ app.use((req, res, next) => {
 });
 
 // error logger
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  next(err);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.use((err, req, res, next) => {
+    console.error(err.stack);
+    next(err);
+  });
+}
 
 // development error handler will print stacktrace
 if (app.get('env') === 'development') {
