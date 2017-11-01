@@ -21,7 +21,7 @@ const getAllPairs = () => {
 };
 
 const getPair = ({ id, name }) => {
-  if (id !== undefined) {
+  if (id) {
     return pairs().where('id', parseInt(id, 10)).first();
   }
   return pairs().where('name', name).first();
@@ -39,7 +39,7 @@ const addPair = ({ name, major = false }) => {
 };
 
 const updatePairById = (id, updates) => {
-  if (id === undefined) {
+  if (!id) {
     return Promise.reject(new Error('Pair ID not provided'));
   }
   return pairs()
@@ -49,7 +49,7 @@ const updatePairById = (id, updates) => {
 };
 
 const deletePairById = (id) => {
-  if (id === undefined) {
+  if (!id) {
     return Promise.reject(new Error('Pair ID not provided'));
   }
   return pairs().where('id', parseInt(id, 10)).del();
