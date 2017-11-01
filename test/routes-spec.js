@@ -5,11 +5,11 @@ const chaiHttp = require('chai-http');
 const server = require('../app');
 const knex = require('../db/knex');
 
-// const should = chai.should();
+const should = chai.should();
 
 chai.use(chaiHttp);
 
-describe('API Routes', () => {
+describe('Routes API Specs', () => {
   beforeEach((done) => {
     knex.migrate.rollback()
       .then(() => knex.migrate.latest())
@@ -30,21 +30,25 @@ describe('API Routes', () => {
         .get('/api/v1/pairs')
         .end((err, res) => {
           res.should.have.status(200);
-          res.should.be.json; // jshint ignore:line
           res.body.should.be.a('array');
           res.body.length.should.equal(10);
+          done();
+        });
+    });
+
+    it('should have proper JSON format for each pair', (done) => {
+      chai.request(server)
+        .get('/api/v1/pairs')
+        .end((err, res) => {
+          res.should.be.json; // jshint ignore:line
+          res.body[0].should.have.property('id');
           res.body[0].should.have.property('name');
-          res.body[0].name.should.equal('Suits');
-          res.body[0].should.have.property('channel');
-          res.body[0].channel.should.equal('USA Network');
-          res.body[0].should.have.property('genre');
-          res.body[0].genre.should.equal('Drama');
-          res.body[0].should.have.property('rating');
-          res.body[0].rating.should.equal(3);
-          res.body[0].should.have.property('explicit');
-          res.body[0].explicit.should.equal(false);
+          res.body[0].should.have.property('major');
+          res.body[0].should.have.property('base');
+          res.body[0].should.have.property('quote');
           done();
         });
     });
   });
 });
+

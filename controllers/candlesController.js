@@ -1,19 +1,14 @@
 const queries = require('../db/queries');
 
-const errorHandler = (req, res, status, err) => {
-  console.error(err);
-  res.status(status || 400).json({ message: err.message, error: err });
-};
-
 module.exports = {
-  get: (req, res) => {
+  get: (req, res, next) => {
     const { pairID, start, end } = req.query;
 
     queries.getS5BarsByTimeRangeAndPairID({ pairID, start, end })
       .then(data => res.status(200).json(data))
-      .catch(err => errorHandler(req, res, 404, err));
+      .catch(err => next(err));
   },
-  post: (req, res) => {
+  post: (req, res, next) => {
     const {
       dt,
       ticks,
@@ -44,21 +39,21 @@ module.exports = {
       ask_c,
       ask_v })
       .then(newS5Bar => res.status(201).json(newS5Bar))
-      .catch(err => errorHandler(req, res, 400, err));
+      .catch(err => next(err));
   },
-  delete: (req, res) => {
+  delete: (req, res, next) => {
     const s5barID = req.params.id;
 
     queries.deleteS5BarsById(s5barID)
       .then(result => res.status(200).json(result))
-      .catch(err => errorHandler(req, res, 400, err));
+      .catch(err => next(err));
   },
-  patch: (req, res) => {
+  patch: (req, res, next) => {
     const s5barID = req.params.id;
     const updates = req.body;
 
     queries.updateS5BarsById(s5barID, updates)
       .then(updatedBar => res.status(200).json(updatedBar))
-      .catch(err => errorHandler(req, res, 400, err));
+      .catch(err => next(err));
   }
 };
