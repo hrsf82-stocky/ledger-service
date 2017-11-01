@@ -206,5 +206,5 @@ module.exports = {
   getS5BarsByTimeRangeAndPairID,
   addS5Bar,
   updateS5BarsById,
-  deleteS5BarsById,
+  deleteS5BarsById
 };
