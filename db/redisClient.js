@@ -29,11 +29,11 @@ const redisClient = redis.createClient({
 });
 
 redisClient.on('ready', () => {
-  console.log(`Redis is ready at Host:${REDISHOST}, Port:${REDISPORT}`);
+  console.log(`Redis Ready - host:${REDISHOST}, port:${REDISPORT}`);
 });
 
-redisClient.on('error', () => {
-  console.error('Error in Redis Client');
+redisClient.on('error', (err) => {
+  console.error('Redis Error -', err);
 });
 
 module.exports = redisClient;
