@@ -179,6 +179,10 @@ const deleteS5BarsById = (id) => {
   return s5bars().where('id', parseInt(id, 10)).del();
 };
 
+/**
+ * Materialized Views for s5bars (5 second OHLC) Table Helper Functions
+ */
+
 
 module.exports = {
   getAllPairs,
