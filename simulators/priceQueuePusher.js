@@ -3,6 +3,7 @@ const path = require('path');
 const csv = require('csv');
 const AWS = require('aws-sdk');
 const { PriceQueueURL } = require('../config.js');
+const resetSchemaSeeds = require('../db/generator/resetSchemaSeeds');
 
 AWS.config.loadFromPath('../config.json');
 
@@ -88,22 +89,26 @@ const pushNewPrice = ({ instrument, time, bid, ask, bid_vol, ask_vol }, done) =>
 
 
 const runPricePusher = (done) => {
-  parseCVSPrices(csvFilePath, (priceData) => {
-    let i = 0;
+  resetSchemaSeeds()
+    .then(() => {
+      parseCVSPrices(csvFilePath, (priceData) => {
+        let i = 0;
 
-    setInterval(() => {
-      const priceTick = priceData[i];
-      priceTick.instrument = instruments[Math.floor(Math.random() * 10)];
-      console.log(priceData[i]);
+        setInterval(() => {
+          const priceTick = priceData[i];
+          priceTick.instrument = instruments[Math.floor(Math.random() * 10)];
+          console.log(priceData[i]);
 
-      pushNewPrice(priceTick, () => {
-        i += 1;
-        if (i === priceData.length) {
-          done();
-        }
+          pushNewPrice(priceTick, () => {
+            i += 1;
+            if (i === priceData.length) {
+              done();
+            }
+          });
+        }, 1000);
       });
-    }, 1000);
-  });
+    })
+    .catch(console.error);
 };
 
 runPricePusher(() => console.log('Finished pushing all price data'));
