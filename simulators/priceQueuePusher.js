@@ -8,6 +8,7 @@ AWS.config.loadFromPath('../config.json');
 
 const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
 const csvFilePath = path.join(__dirname, '/EURUSD-Sample-Prices.csv');
+const instruments = ['EURUSD', 'GBPUSD', 'USDCAD', 'USDCHF', 'USDJPY', 'EURGBP', 'EURCHF', 'AUDUSD', 'EURJPY', 'GBPJPY'];
 
 const parseCVSPrices = (path, callback) => {
   const options = {
@@ -31,8 +32,9 @@ const parseCVSPrices = (path, callback) => {
     });
 };
 
-const transformPriceDataTypes = ({ time, bid, ask, bid_vol, ask_vol }) => ({
+const transformPriceDataTypes = ({ instrument, time, bid, ask, bid_vol, ask_vol }) => ({
   time,
+  instrument,
   bid: parseFloat(bid),
   ask: parseFloat(ask),
   bid_vol: parseInt(bid_vol, 10),
@@ -40,7 +42,7 @@ const transformPriceDataTypes = ({ time, bid, ask, bid_vol, ask_vol }) => ({
 });
 
 const pushNewPrice = ({ instrument, time, bid, ask, bid_vol, ask_vol }, done) => {
-  const payload = transformPriceDataTypes({ time, bid, ask, bid_vol, ask_vol });
+  const payload = transformPriceDataTypes({ instrument, time, bid, ask, bid_vol, ask_vol });
 
   const params = {
     DelaySeconds: 0,
@@ -90,8 +92,11 @@ const runPricePusher = (done) => {
     let i = 0;
 
     setInterval(() => {
+      const priceTick = priceData[i];
+      priceTick.instrument = instruments[Math.floor(Math.random() * 10)];
       console.log(priceData[i]);
-      pushNewPrice(priceData[i], () => {
+
+      pushNewPrice(priceTick, () => {
         i += 1;
         if (i === priceData.length) {
           done();

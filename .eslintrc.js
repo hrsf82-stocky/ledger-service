@@ -21,9 +21,12 @@ module.exports = {
     "new-cap": ["error", { "capIsNewExceptionPattern": "^require\.." }],
     "object-curly-newline": 0,
     "no-unused-vars": ["error", { "args": "none" }],
+    "prefer-destructuring": ["error", {"object": true, "array": false}],
     "prefer-template": 0,
     "no-path-concat": 0,
-    "arrow-body-style": 0
+    "arrow-body-style": 0,
+    "camelcase": 0,
+    "no-bitwise": 0
   },
   "overrides": [
     {
