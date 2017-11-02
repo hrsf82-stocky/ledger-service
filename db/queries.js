@@ -1,17 +1,11 @@
-const moment = require('moment');
 const Promise = require('bluebird');
 const knex = require('./knex');
+const { isValidDateTime } = require('../lib/utility');
 
 // References to Postgres tables
 const pairs = () => knex('pairs');
 const ticks = () => knex('ticks');
 const s5bars = () => knex('s5bars');
-
-// General Helper Functions
-const isValidDateTime = (timestamp) => {
-  return moment(timestamp, moment.ISO_8601, true).isValid();
-};
-
 
 /**
  * Pairs Table Helper Functions

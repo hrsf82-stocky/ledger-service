@@ -1,6 +1,7 @@
 const AWS = require('aws-sdk');
 const Consumer = require('sqs-consumer');
 const { PriceQueueURL } = require('../config.js');
+const priceProcessor = require('../lib/priceProcessor');
 
 AWS.config.loadFromPath('../config.json');
 
@@ -16,8 +17,16 @@ const app = Consumer.create({
     console.log(JSON.parse(message.Body));
     // console.log(message.Attributes);
     // console.log(message.MessageAttributes);
+    const price = JSON.parse(message.Body).payload;
 
-    done();
+    console.log(price);
+
+    priceProcessor(price)
+      .then(res => done())
+      .catch((err) => {
+        console.error(err);
+        done();
+      });
   }
 });
 
