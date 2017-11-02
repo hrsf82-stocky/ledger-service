@@ -1,14 +1,15 @@
 const knex = require('../knex');
 
-const resetSchemaSeeds = (done) => {
-  knex.migrate.rollback()
+const resetSchemaSeeds = () => {
+  return knex.migrate.rollback()
     .then(() => knex.migrate.latest())
-    .then(() => knex.seed.run())
-    .then(done)
-    .catch(done);
+    .then(() => knex.seed.run());
 };
 
-resetSchemaSeeds((res) => {
-  console.log(res);
-  process.exit();
-});
+if (!module.parent) {
+  resetSchemaSeeds()
+    .then(console.log)
+    .catch(console.error);
+}
+
+module.exports = resetSchemaSeeds;
