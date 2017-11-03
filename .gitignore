@@ -6,6 +6,7 @@ config/test.json
 config.js
 config.json
 EURUSD-Sample-Prices.csv
+logstash-pg.conf
 
 # OS X
 .DS_Store
