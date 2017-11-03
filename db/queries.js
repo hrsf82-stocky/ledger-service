@@ -159,6 +159,10 @@ const addS5Bar = (rowData) => {
     .returning('*');
 };
 
+const addBulkS5Bars = (bulkRowData) => {
+  return s5bars().insert(bulkRowData).returning('*');
+};
+
 const updateS5BarsById = (id, updates) => {
   if (id === undefined) {
     return Promise.reject(new Error('s5bars ID not provided'));
@@ -200,5 +204,6 @@ module.exports = {
   getS5BarsByTimeRangeAndPairID,
   addS5Bar,
   updateS5BarsById,
-  deleteS5BarsById
+  deleteS5BarsById,
+  addBulkS5Bars
 };

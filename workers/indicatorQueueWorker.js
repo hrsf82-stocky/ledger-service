@@ -59,13 +59,15 @@ const job = new cron.CronJob({
           return _.toPairs(_.groupBy(rows, row => row.id_pairs)).map(tuple => tuple[1]);
         });
 
-        // console.log(rowsByPairID);
-
+        // Calculate OHLC values for each set of ticks
         const ohlcRows = rowsByPairID.map((unixRows, idx) => (
           unixRows.map(pairRows => computeOHLCFromTicks(pairRows, s5UnixTimes[idx]))
         ));
 
-        console.log(ohlcRows);
+        return queries.addBulkS5Bars(_.flatten(ohlcRows));
+      })
+      .then((newBars) => {
+        console.log(newBars);
       })
       .catch(console.error);
   },
