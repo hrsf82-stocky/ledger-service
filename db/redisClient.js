@@ -29,7 +29,7 @@ const redisClient = redis.createClient({
 });
 
 redisClient.on('ready', () => {
-  console.log(`Redis Ready - host:${REDISHOST}:${REDISPORT}`);
+  console.log(`Redis Ready at ${REDISHOST}:${REDISPORT}`);
 });
 
 redisClient.on('error', (err) => {

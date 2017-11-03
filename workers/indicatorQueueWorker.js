@@ -5,11 +5,17 @@ const Promise = require('bluebird');
 const redisClient = require('../db/redisClient');
 const queries = require('../db/queries');
 const { computeOHLCFromTicks } = require('../lib/utility');
-
+const pushIndicatorMsg = require('./indicatorQueuePusher');
 
 const has = Object.prototype.hasOwnProperty;
-const redisSSKey = 's5bars';
 
+// redisClient.zrangebyscoreAsync('s5bars', 0, 'inf')
+//   .then(console.log)
+//   .catch(console.error)
+
+// redisClient.zremrangebyscoreAsync('s5bars', '-inf', 'inf')
+//   .then(console.log)
+//   .catch(console.error)
 
 /**
  * Runs Every 5 seconds
@@ -19,15 +25,26 @@ const job = new cron.CronJob({
   onTick: () => {
     console.log('Indicator Queue Worker Ticked');
 
+    const redisSSKey = 's5bars';
+    // Local cache for pair id and instrument name mapping
+    const idPairs = {};
     // Current Unix Time
-    const currentUnix = moment().utc().unix();
+    const currentUnix = moment().valueOf();
     // Array of unique 5 sec Unix timestamps
     let s5UnixTimes;
     // Array of array of tick ids that corresponds to same position in s5UnixTimes;
     let s5UnixTickIds;
 
-    // Retrieve all ticks row ids with score up to the last 5 second interval mark
-    redisClient.zrangeAsync(redisSSKey, 0, currentUnix, 'WITHSCORES')
+    // Get all pair id and name combos
+    queries.getAllPairs()
+      .then((pairs) => {
+        pairs.forEach((pair) => {
+          idPairs[pair.id] = pair.name;
+        });
+
+        // Retrieve all ticks row ids with score up to the last 5 second interval mark
+        return redisClient.zrangebyscoreAsync(redisSSKey, 0, currentUnix, 'WITHSCORES');
+      })
       .then((reply) => {
         // Convert flat reply array into chucks of [id, unixtime] pairs
         const tuples = _.chunk(reply, 2);
@@ -68,6 +85,32 @@ const job = new cron.CronJob({
       })
       .then((newBars) => {
         console.log(newBars);
+        const newIndicators = newBars.map((bar) => {
+          return {
+            instrument: idPairs[bar.id_pairs],
+            dt: bar.dt,
+            ticks: bar.ticks,
+            bid_h: bar.bid_h,
+            bid_l: bar.bid_l,
+            bid_o: bar.bid_o,
+            bid_c: bar.bid_c,
+            bid_v: bar.bid_v,
+            ask_h: bar.ask_h,
+            ask_l: bar.ask_l,
+            ask_o: bar.ask_o,
+            ask_c: bar.ask_c,
+            ask_v: bar.ask_v };
+        });
+        // Push new indicators on to Indicator Queue
+        return pushIndicatorMsg(newIndicators, 'realtime');
+      })
+      .then((sqsResult) => {
+        // Delete processed redis data by score
+        return redisClient.zremrangebyscoreAsync(redisSSKey, 0, currentUnix);
+      })
+      .then((reply) => {
+        // Successiful worker operations
+        console.log(reply);
       })
       .catch(console.error);
   },
@@ -75,6 +118,8 @@ const job = new cron.CronJob({
   timeZone: 'America/Los_Angeles'
 });
 
-job.start();
+if (!module.parent) {
+  job.start();
+}
 
 module.exports = job;

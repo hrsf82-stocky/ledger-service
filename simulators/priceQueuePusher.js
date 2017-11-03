@@ -105,7 +105,7 @@ const runPricePusher = (done) => {
               done();
             }
           });
-        }, 1000);
+        }, 100);
       });
     })
     .catch(console.error);
