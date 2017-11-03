@@ -5,7 +5,6 @@ const { OHLCQueueURL } = require('../config.js');
 AWS.config.loadFromPath('../config.json');
 
 const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
-// const instruments = ['EURUSD', 'GBPUSD', 'USDCAD', 'USDCHF', 'USDJPY', 'EURGBP', 'EURCHF', 'AUDUSD', 'EURJPY', 'GBPJPY'];
 
 const pushIndicatorMsg = (payload, type) => {
   const params = {

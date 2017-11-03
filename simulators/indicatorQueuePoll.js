@@ -1,12 +1,11 @@
 const AWS = require('aws-sdk');
 const Consumer = require('sqs-consumer');
-const { PriceQueueURL } = require('../config.js');
-const priceProcessor = require('../lib/priceProcessor');
+const { OHLCQueueURL } = require('../config.js');
 
 AWS.config.loadFromPath('../config.json');
 
 const app = Consumer.create({
-  queueUrl: PriceQueueURL,
+  queueUrl: OHLCQueueURL,
   attributeNames: ['All'],
   messageAttributeNames: ['All'],
   visibilityTimeout: 120,
@@ -16,16 +15,11 @@ const app = Consumer.create({
     console.log(message.MessageId);
     // console.log(message.Attributes);
     // console.log(message.MessageAttributes);
-    const price = JSON.parse(message.Body).payload;
+    const indicator = JSON.parse(message.Body).payload;
 
-    console.log(price);
+    console.log(indicator);
 
-    priceProcessor(price)
-      .then(res => done())
-      .catch((err) => {
-        console.error(err);
-        done();
-      });
+    done();
   }
 });
 
