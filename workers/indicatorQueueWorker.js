@@ -22,8 +22,10 @@ const has = Object.prototype.hasOwnProperty;
  */
 const job = new cron.CronJob({
   cronTime: '*/5 * * * * *',
+  start: false,
+  timeZone: 'America/Los_Angeles',
   onTick: () => {
-    console.log('Indicator Queue Worker Ticked');
+    console.log('Indicator Queue Worker Ticked at', moment().toISOString());
 
     const redisSSKey = 's5bars';
     // Local cache for pair id and instrument name mapping
@@ -46,6 +48,9 @@ const job = new cron.CronJob({
         return redisClient.zrangebyscoreAsync(redisSSKey, 0, currentUnix, 'WITHSCORES');
       })
       .then((reply) => {
+        if (reply.length === 0) {
+          throw new RangeError('No new ticks data found');
+        }
         // Convert flat reply array into chucks of [id, unixtime] pairs
         const tuples = _.chunk(reply, 2);
 
@@ -112,10 +117,14 @@ const job = new cron.CronJob({
         // Successiful worker operations
         console.log(reply);
       })
-      .catch(console.error);
-  },
-  start: false,
-  timeZone: 'America/Los_Angeles'
+      .catch((err) => {
+        if (err.name === 'RangeError') {
+          console.error(err.message);
+        } else {
+          console.error(err.stack);
+        }
+      });
+  }
 });
 
 if (!module.parent) {
