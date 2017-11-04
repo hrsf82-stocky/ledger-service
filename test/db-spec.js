@@ -1,45 +1,39 @@
 process.env.NODE_ENV = 'test';
 
 const chai = require('chai');
-const chaiHttp = require('chai-http');
-const { expect } = require('chai');
-const request = require('supertest');
-const app = require('../app.js');
+const knex = require('../db/knex');
+const queries = require('../db/queries');
 
-chai.use(chaiHttp);
+const should = chai.should();
 
-const server = app.listen(8888);
-
-describe('Server Specs', () => {
-  beforeEach(() => {
-    server.listen(8888);
+describe('Database Helper Specs', () => {
+  beforeEach((done) => {
+    knex.migrate.rollback()
+      .then(() => knex.migrate.latest())
+      .then(() => knex.seed.run())
+      .then(() => done())
+      .catch(done);
   });
 
-  afterEach(() => {
-    server.close();
+  afterEach((done) => {
+    knex.migrate.rollback()
+      .then(() => done())
+      .catch(done);
   });
 
-  describe('GET /test', () => {
-    it('should return 200 status code and matching response ', (done) => {
-      request(server)
-        .get('/test')
-        .expect(200)
-        .expect((res) => {
-          expect(res.body).to.be.equal('Hello World Test');
+  describe('getAllPairs', () => {
+    it('should return all data in pairs table', (done) => {
+      queries.getAllPairs()
+        .then((res) => {
+          res.should.be.a('array');
+          res.length.should.equal(10);
+          res[0].should.have.property('id');
+          res[0].should.have.property('name');
+          res[0].should.have.property('major');
+          res[0].should.have.property('base');
+          res[0].should.have.property('quote');
         })
-        .end(done);
-    });
-  });
-
-  describe('GET /', () => {
-    it('should return 404 status code', (done) => {
-      request(server)
-        .get('/')
-        .expect(404)
-        .expect((res) => {
-          expect(res.body.message).to.be.equal('Not Found');
-        })
-        .end(done);
+        .then(done, done);
     });
   });
 });
