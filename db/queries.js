@@ -108,7 +108,13 @@ const getTicksByIds = (ids) => {
 /**
  * s5bars (5 second OHLC) Table Helper Functions
  */
-const getS5BarsByTimeRangeAndPairID = ({ pairID, start, end }) => {
+const getS5BarsByTimeRangeAndPairID = (params) => {
+  if (!params) {
+    return Promise.reject(new Error('No input params object'));
+  }
+
+  const { pairID, start, end } = params;
+
   if (pairID === undefined) {
     return Promise.reject(new Error('Pair ID not provided'));
   }
