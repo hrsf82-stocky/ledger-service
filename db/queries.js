@@ -53,7 +53,13 @@ const deletePairById = (id) => {
 /**
  * Ticks Table Helper Functions
  */
-const getTicksByTimeRangeAndPairId = ({ pairID, start, end }) => {
+const getTicksByTimeRangeAndPairId = (params) => {
+  if (!params) {
+    return Promise.reject(new Error('No input params object'));
+  }
+
+  const { pairID, start, end } = params;
+
   if (pairID === undefined) {
     return Promise.reject(new Error('Pair ID not provided'));
   }
