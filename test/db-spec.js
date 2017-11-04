@@ -1,10 +1,11 @@
 process.env.NODE_ENV = 'test';
 
 const chai = require('chai');
-const chaiAsPromised = require("chai-as-promised");
+const chaiAsPromised = require('chai-as-promised');
 const knex = require('../db/knex');
 const queries = require('../db/queries');
 const { expect } = require('chai');
+
 const should = chai.should();
 
 chai.use(chaiAsPromised);
@@ -96,6 +97,26 @@ describe('Database Helper Specs', () => {
 
     it('should throw error with no id argument', () => {
       return queries.updatePairById().should.eventually.be.rejectedWith(Error);
+    });
+  });
+
+  describe('deletePairById', () => {
+    it('should return successfully delete targeted row', (done) => {
+      queries.deletePairById(1)
+        .then((res) => {
+          console.log(res);
+          res.should.equal(1);
+          return queries.getAllPairs();
+        })
+        .then((pairs) => {
+          console.log(pairs);
+          pairs.length.should.equal(9);
+        })
+        .then(done, done);
+    });
+
+    it('should throw error with no id argument', () => {
+      return queries.deletePairById().should.eventually.be.rejectedWith(Error);
     });
   });
 });
