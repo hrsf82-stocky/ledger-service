@@ -22,7 +22,7 @@ describe('Utility Lib Specs', () => {
       done();
     });
 
-    it('should return false for valid date', (done) => {
+    it('should return false for invalid date', (done) => {
       utility.isValidDateTime('Wrong Date').should.equal(false);
       done();
     });
@@ -172,7 +172,6 @@ describe('Utility Lib Specs', () => {
     it('should return an object with all valid values', (done) => {
       const ohlc = utility.computeOHLCFromTicks([t1, t2], Date.parse('2017-11-01T00:00:00.000Z'));
 
-      console.log(ohlc);
       ohlc.dt.should.equal('2017-11-01T00:00:00.000Z');
       ohlc.ticks.should.equal(2);
       ohlc.id_pairs.should.equal(1);
