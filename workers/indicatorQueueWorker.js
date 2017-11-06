@@ -9,14 +9,6 @@ const pushIndicatorMsg = require('./indicatorQueuePusher');
 
 const has = Object.prototype.hasOwnProperty;
 
-// redisClient.zrangebyscoreAsync('s5bars', 0, 'inf')
-//   .then(console.log)
-//   .catch(console.error)
-
-// redisClient.zremrangebyscoreAsync('s5bars', '-inf', 'inf')
-//   .then(console.log)
-//   .catch(console.error)
-
 /**
  * Runs Every 5 seconds
  */

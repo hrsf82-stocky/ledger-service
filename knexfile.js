@@ -11,7 +11,11 @@ module.exports = {
       user: PGUSER,
       password: PGPW
     },
-    acquireConnectionTimeout: 10000,
+    pool: {
+      min: 2,
+      max: 100
+    },
+    acquireConnectionTimeout: 5000,
     migrations: {
       directory: __dirname + '/db/migrations'
     },
@@ -31,9 +35,9 @@ module.exports = {
     },
     pool: {
       min: 2,
-      max: 30
+      max: 100
     },
-    acquireConnectionTimeout: 10000,
+    acquireConnectionTimeout: 5000,
     migrations: {
       directory: __dirname + '/db/migrations'
     },
@@ -47,9 +51,9 @@ module.exports = {
     connection: process.env.DATABASE_URL,
     pool: {
       min: 2,
-      max: 30
+      max: 100
     },
-    acquireConnectionTimeout: 10000,
+    acquireConnectionTimeout: 5000,
     migrations: {
       directory: __dirname + '/db/migrations'
     },
