@@ -1,6 +1,6 @@
 const Promise = require('bluebird');
 const knex = require('./knex');
-const { isValidDateTime } = require('../lib/utility');
+const { isValidDateTime, generateMViewSchemeName, granularityToSQLString } = require('../lib/utility');
 
 // References to Postgres tables
 const pairs = () => knex('pairs');
@@ -195,12 +195,67 @@ const deleteS5BarsById = (id) => {
 /**
  * Materialized Views for s5bars (5 second OHLC) Table Helper Functions
  */
-// const addMviewByPairName = (pair, interval, length = '1 year') => {
-//   if (!pair || !interval) {
-//     return Promise.reject(new Error('pair name or interval not provided'));
-//   }
+const addMviewByPairName = (pairName, granularity, start = '2 year', withData = true) => {
+  if (!pairName || !granularity) {
+    return Promise.reject(new Error('pair name or granularity not provided'));
+  }
 
-// };
+  const withDataSQL = withData ? 'DATA' : 'NO DATA';
+  const mviewName = generateMViewSchemeName(pairName, granularity);
+  const intervalSQL = granularityToSQLString(granularity);
+
+  return getPair({ name: pairName })
+    .then((res) => {
+      if (!res) {
+        throw new Error('pair name does not exist in database');
+      }
+
+      const pairID = res.id;
+
+      return knex.raw(`
+        CREATE MATERIALIZED VIEW ${mviewName}
+        AS
+          WITH intervals AS (
+            SELECT start, start + interval '${intervalSQL}' AS end
+          FROM generate_series(current_date - interval '${start}', current_date, interval '${intervalSQL}') AS start)
+          SELECT DISTINCT
+            intervals.start AS dt,
+            min(bid_l) OVER w AS bid_l,
+            max(bid_h) OVER w AS bid_h,
+            first_value(bid_o) OVER w as bid_o,
+            last_value(bid_c) OVER w as bid_c,
+            sum(bid_v) OVER w AS bid_v,
+            min(ask_l) OVER w AS ask_l,
+            max(ask_h) OVER w AS ask_h,
+            first_value(ask_o) OVER w as ask_o,
+            last_value(ask_c) OVER w as ask_c,
+            sum(ask_v) OVER w AS ask_v,
+            min((bid_l + ask_l) / 2) OVER w AS mid_l,
+            max((bid_h + ask_h) / 2) OVER w AS mid_h,
+            first_value((bid_o + ask_o) / 2) OVER w as mid_o,
+            last_value((bid_c + ask_c) / 2) OVER w as mid_c,
+            sum((bid_v + ask_v) / 2) OVER w AS mid_v,
+            sum(ticks) OVER w AS ticks
+          FROM intervals 
+          JOIN s5bars s5 ON 
+            s5.id_pairs = ${pairID} AND
+            s5.dt >= intervals.start AND
+            s5.dt < intervals.end
+          WINDOW w AS (PARTITION BY intervals.start ORDER BY
+            s5.dt ASC rows BETWEEN UNBOUNDED PRECEDING AND
+            UNBOUNDED FOLLOWING)
+          ORDER BY intervals.start
+        WITH ${withDataSQL}`)
+        .then(() => {
+          return knex.raw(`CREATE UNIQUE INDEX ${mviewName}_index ON ${mviewName} (dt)`);
+        });
+    });
+};
+
+addMviewByPairName('EURUSD', 'h4', '1 year', false)
+  .then(res => {
+    console.log(res);
+  });
 
 module.exports = {
   getAllPairs,
@@ -217,5 +272,6 @@ module.exports = {
   addS5Bar,
   updateS5BarsById,
   deleteS5BarsById,
-  addBulkS5Bars
+  addBulkS5Bars,
+  addMviewByPairName
 };
