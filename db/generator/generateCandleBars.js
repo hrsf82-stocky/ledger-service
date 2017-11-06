@@ -74,7 +74,7 @@ const loadMonthlyData = (year, month, day) => {
   }
   loadBulkMajorPairsCandles(new Date(Date.UTC(year, month - 1, day, 0, 0, 0)).toISOString())
     .then((results) => {
-      console.log(`2017-${month}-${dayStr} - 50000 data points of 5sec OHLC inserted to db`);
+      console.log(`2017-${month}-${dayStr} - 5000 data points of 5sec OHLC inserted to db`);
       loadMonthlyData(year, month, day + 1);
     })
     .catch(console.error);

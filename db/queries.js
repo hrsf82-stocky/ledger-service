@@ -1,6 +1,9 @@
 const Promise = require('bluebird');
 const knex = require('./knex');
-const { isValidDateTime, generateMViewSchemeName, granularityToSQLString } = require('../lib/utility');
+const { isValidDateTime,
+  generateMViewSchemeName,
+  granularityToSQLString,
+  generatePairGranularityCombos } = require('../lib/utility');
 
 // References to Postgres tables
 const pairs = () => knex('pairs');
@@ -195,7 +198,7 @@ const deleteS5BarsById = (id) => {
 /**
  * Materialized Views for s5bars (5 second OHLC) Table Helper Functions
  */
-const addMviewByPairName = (pairName, granularity, start = '2 year', withData = true) => {
+const addMviewByPairName = (pairName, granularity, start = '2 year', withData = false) => {
   if (!pairName || !granularity) {
     return Promise.reject(new Error('pair name or granularity not provided'));
   }
@@ -252,10 +255,81 @@ const addMviewByPairName = (pairName, granularity, start = '2 year', withData = 
     });
 };
 
-addMviewByPairName('EURUSD', 'h4', '1 year', false)
-  .then(res => {
-    console.log(res);
-  });
+const createMviewCombos = () => {
+  const granularities = ['m1', 'm5', 'm30', 'h1', 'h4', 'd1'];
+
+  return getAllPairs()
+    .then((pairs) => {
+      const pairNames = pairs.map(pair => pair.name);
+
+      const pairGranularityCombos = generatePairGranularityCombos(pairNames, granularities);
+
+      return pairGranularityCombos.reduce((previous, current, index, array) => {
+        return previous.then(() => addMviewByPairName(array[index][0], array[index][1]));
+      }, Promise.resolve());
+    });
+};
+
+const getAllMviews = () => {
+  return knex.select(knex.raw('oid::regclass::text')).from('pg_class').where('relkind', 'm');
+};
+
+const deleteAllMviews = () => {
+  return knex.select(knex.raw('\'DROP MATERIALIZED VIEW \' || string_agg(oid::regclass::text, \', \')'))
+    .from('pg_class').where('relkind', 'm')
+    .then((query) => {
+      return knex.raw(query[0]['?column?']);
+    });
+};
+
+const deleteMviewByName = (mviewName) => {
+  return knex.raw(`DROP MATERIALIZED VIEW ${mviewName}`);
+};
+
+const dropAllPGSessions = () => {
+  return knex.select(knex.raw('pg_terminate_backend(pg_stat_activity.pid)'))
+    .from('pg_stat_activity')
+    .where(knex.raw('datname = current_database()'))
+    .andWhere(knex.raw('pid <> pg_backend_pid()'));
+};
+
+// getAllMviews()
+//   .then(res => {
+//     console.log(res);
+//   });
+
+// createMviewCombos()
+//   .then(res => {
+//     console.log(res);
+//   });
+
+// deleteMviewByName('mview_usdchf_m1')
+//   .then(res => {
+//     console.log(res);
+//   })
+
+// deleteAllMviews()
+//   .then(res => {
+//     console.log(res);
+//   });
+
+// getAllMviews()
+//   .then(res => {
+//     console.log(res);
+//   });
+
+// dropAllPGSessions()
+//   .then((res) => {
+//     console.log(res);
+//   });
+
+// console.log(dropAllPGSessions());
+
+
+// addMviewByPairName('EURUSD', 'h4', '1 year', false)
+//   .then(res => {
+//     console.log(res);
+//   });
 
 module.exports = {
   getAllPairs,
@@ -273,5 +347,10 @@ module.exports = {
   updateS5BarsById,
   deleteS5BarsById,
   addBulkS5Bars,
-  addMviewByPairName
+  addMviewByPairName,
+  createMviewCombos,
+  getAllMviews,
+  deleteAllMviews,
+  deleteMviewByName,
+  dropAllPGSessions
 };
