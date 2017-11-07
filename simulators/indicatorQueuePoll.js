@@ -13,12 +13,10 @@ const app = Consumer.create({
   sqs: new AWS.SQS(),
   handleMessage: (message, done) => {
     console.log(message.MessageId);
-    // console.log(message.Attributes);
+    console.log(message.Attributes);
     // console.log(message.MessageAttributes);
     const indicator = JSON.parse(message.Body).payload;
-
     console.log(indicator);
-
     done();
   }
 });
