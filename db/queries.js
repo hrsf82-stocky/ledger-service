@@ -1,5 +1,6 @@
 const Promise = require('bluebird');
 const knex = require('./knex');
+const _ = require('lodash');
 const { isValidDateTime,
   generateMViewSchemeName,
   granularityToSQLString,
@@ -295,6 +296,7 @@ const dropAllPGSessions = () => {
 
 const refreshMviewByName = (mviewName, concurrent = false) => {
   const concurrently = concurrent ? 'CONCURRENTLY' : '';
+  console.log(`Refreshing ${mviewName} ${concurrently}`);
 
   return knex.raw(`REFRESH MATERIALIZED VIEW ${concurrently} ${mviewName};`);
 };
@@ -303,13 +305,21 @@ const refreshAllMviews = (concurrent = false) => {
   return getAllMviews()
     .then((res) => {
       const mviews = res.map(item => item.oid);
-      return mviews.reduce((previous, current, index, array) => {
-        return previous.then(() => refreshMviewByName(array[index], concurrent));
-      }, Promise.resolve());
+
+      const mviewsByTenChunks = _.chunk(mviews, 10);
+
+      // Refreshing Materialized Views in Chucks of 10
+      return mviewsByTenChunks.reduce((previous, current, index, array) => (
+        previous.then(() => Promise.map(current, mview => refreshMviewByName(mview, concurrent)))
+      ), Promise.resolve());
     });
 };
 
-refreshAllMviews();
+// refreshAllMviews(true)
+//   .then((res) => {
+//     console.log('Materialzied view refresh all done');
+//   });
+
 // refreshMviewByName('mview_eurusd_m1')
 //   .then((res) => {
 //     console.log(res);
