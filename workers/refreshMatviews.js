@@ -1,17 +1,26 @@
 const cron = require('cron');
 const moment = require('moment');
-const _ = require('lodash');
-const Promise = require('bluebird');
 const queries = require('../db/queries');
-const { computeOHLCFromTicks } = require('../lib/utility');
-
-const has = Object.prototype.hasOwnProperty;
 
 /**
- * Runs Every 5 seconds
+ * Runs at 00:01AM everyday
  */
 const job = new cron.CronJob({
+  cronTime: '00 01 00 * * *',
+  start: true,
+  runOnInit: true,
+  timeZone: 'America/Los_Angeles',
+  onTick: () => {
+    console.log('Materialized View Refresh Worker Ticked at', moment().toISOString());
 
+    queries.refreshAllMviews(true)
+      .then((res) => {
+        console.log('Materialzied view refresh all done at', moment().toISOString());
+      })
+      .catch((err) => {
+        console.error(err.stack);
+      });
+  }
 });
 
 if (!module.parent) {
