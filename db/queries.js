@@ -315,6 +315,28 @@ const refreshAllMviews = (concurrent = false) => {
     });
 };
 
+const getMviewData = (mviewName, type, start = '2015-01-01') => {
+  const colsByType = {
+    M: ['mid_l', 'mid_h', 'mid_o', 'mid_c', 'mid_v'],
+    B: ['bid_l', 'bid_h', 'bid_o', 'bid_c', 'bid_v'],
+    A: ['ask_l', 'ask_h', 'ask_o', 'ask_c', 'ask_v']
+  };
+
+  let cols = [];
+  for (let i = 0; i < type.length; i += 1) {
+    cols = cols.concat(colsByType[type[i].toUpperCase()]);
+  }
+
+  return knex.select('dt', 'ticks', ...cols)
+    .from(mviewName)
+    .where('dt', '>', start);
+};
+
+// getMviewData('mview_eurusd_m1', 'BAM', '2017-10-01')
+//   .then((res) => {
+//     console.log(res);
+//   });
+
 // refreshAllMviews(true)
 //   .then((res) => {
 //     console.log('Materialzied view refresh all done');
@@ -386,5 +408,6 @@ module.exports = {
   deleteMviewByName,
   dropAllPGSessions,
   refreshMviewByName,
-  refreshAllMviews
+  refreshAllMviews,
+  getMviewData
 };
