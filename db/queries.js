@@ -332,58 +332,6 @@ const getMviewData = (mviewName, type, start = '2015-01-01') => {
     .where('dt', '>', start);
 };
 
-// getMviewData('mview_eurusd_m1', 'BAM', '2017-10-01')
-//   .then((res) => {
-//     console.log(res);
-//   });
-
-// refreshAllMviews(true)
-//   .then((res) => {
-//     console.log('Materialzied view refresh all done');
-//   });
-
-// refreshMviewByName('mview_eurusd_m1')
-//   .then((res) => {
-//     console.log(res);
-//   });
-
-// getAllMviews()
-//   .then(res => {
-//     console.log(res);
-//   });
-
-// createMviewCombos()
-//   .then(res => {
-//     console.log(res);
-//   });
-
-// deleteMviewByName('mview_usdchf_m1')
-//   .then(res => {
-//     console.log(res);
-//   })
-
-// deleteAllMviews()
-//   .then(res => {
-//     console.log(res);
-//   });
-
-// getAllMviews()
-//   .then(res => {
-//     console.log(res);
-//   });
-
-// dropAllPGSessions()
-//   .then((res) => {
-//     console.log(res);
-//   });
-
-// console.log(dropAllPGSessions());
-
-
-// addMviewByPairName('EURUSD', 'h4', '1 year', false)
-//   .then(res => {
-//     console.log(res);
-//   });
 
 module.exports = {
   getAllPairs,

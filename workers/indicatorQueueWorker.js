@@ -5,7 +5,7 @@ const Promise = require('bluebird');
 const redisClient = require('../db/redisClient');
 const queries = require('../db/queries');
 const { computeOHLCFromTicks } = require('../lib/utility');
-const pushIndicatorMsg = require('./indicatorQueuePusher');
+const { pushIndicatorMsgRT } = require('./indicatorQueuePusher');
 
 const has = Object.prototype.hasOwnProperty;
 
@@ -99,7 +99,7 @@ const job = new cron.CronJob({
             ask_v: bar.ask_v };
         });
         // Push new indicators on to Indicator Queue
-        return pushIndicatorMsg(newIndicators, 'realtime');
+        return pushIndicatorMsgRT(newIndicators, 'realtime');
       })
       .then((sqsResult) => {
         // Delete processed redis data by score
