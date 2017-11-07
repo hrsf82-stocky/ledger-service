@@ -293,6 +293,28 @@ const dropAllPGSessions = () => {
     .andWhere(knex.raw('pid <> pg_backend_pid()'));
 };
 
+const refreshMviewByName = (mviewName, concurrent = false) => {
+  const concurrently = concurrent ? 'CONCURRENTLY' : '';
+
+  return knex.raw(`REFRESH MATERIALIZED VIEW ${concurrently} ${mviewName};`);
+};
+
+const refreshAllMviews = (concurrent = false) => {
+  return getAllMviews()
+    .then((res) => {
+      const mviews = res.map(item => item.oid);
+      return mviews.reduce((previous, current, index, array) => {
+        return previous.then(() => refreshMviewByName(array[index], concurrent));
+      }, Promise.resolve());
+    });
+};
+
+refreshAllMviews();
+// refreshMviewByName('mview_eurusd_m1')
+//   .then((res) => {
+//     console.log(res);
+//   });
+
 // getAllMviews()
 //   .then(res => {
 //     console.log(res);
@@ -352,5 +374,7 @@ module.exports = {
   getAllMviews,
   deleteAllMviews,
   deleteMviewByName,
-  dropAllPGSessions
+  dropAllPGSessions,
+  refreshMviewByName,
+  refreshAllMviews
 };
