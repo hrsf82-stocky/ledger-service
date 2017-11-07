@@ -1,8 +1,8 @@
 const AWS = require('aws-sdk');
-const Promise = require('bluebird');
 const { OHLCQueueURL } = require('../config.js');
 
 AWS.config.loadFromPath('../config.json');
+AWS.config.setPromisesDependency(require('bluebird'));
 
 const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
 
@@ -19,17 +19,14 @@ const pushIndicatorMsgRT = (payload, type) => {
     QueueUrl: OHLCQueueURL
   };
 
-  return new Promise((resolve, reject) => {
-    sqs.sendMessage(params, (err, data) => {
-      if (err) {
-        console.log('Error', err);
-        reject(err);
-      } else {
-        console.log('Indicator Queue - Realtime Message Sent Success', data.MessageId);
-        resolve(data);
-      }
+  return sqs.sendMessage(params).promise()
+    .then((data) => {
+      console.log('Indicator Queue - Realtime Message Sent Success', data.MessageId);
+      return data;
+    })
+    .catch((err) => {
+      console.log('Indicator Queue - Realtime Message Sent Error', err);
     });
-  });
 };
 
 const pushIndicatorMsgHist = (payload, type, instrument, requestMsgId) => {
@@ -53,17 +50,14 @@ const pushIndicatorMsgHist = (payload, type, instrument, requestMsgId) => {
     QueueUrl: OHLCQueueURL
   };
 
-  return new Promise((resolve, reject) => {
-    sqs.sendMessage(params, (err, data) => {
-      if (err) {
-        console.log('Error', err);
-        reject(err);
-      } else {
-        console.log('Indicator Queue - Historical Message Sent Success', data.MessageId);
-        resolve(data);
-      }
+  return sqs.sendMessage(params).promise()
+    .then((data) => {
+      console.log('Indicator Queue - Historical OHLC Message Sent Success', data.MessageId);
+      return data;
+    })
+    .catch((err) => {
+      console.log('Indicator Queue - Historical OHLC Message Sent Error', err);
     });
-  });
 };
 
 module.exports = {

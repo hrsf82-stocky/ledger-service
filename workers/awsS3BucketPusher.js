@@ -34,4 +34,4 @@ const uploadFileToS3 = (key, body) => {
     });
 };
 
-module.exports = uploadFileToS3;
+module.exports = { uploadFileToS3 };
