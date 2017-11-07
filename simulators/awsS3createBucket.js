@@ -9,7 +9,7 @@ const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
 // Create the parameters for calling createBucket
 const bucketParams = {
   Bucket: process.argv[2],
-  ACL : 'public-read'
+  ACL: 'public-read'
 };
 
 // Call S3 to create the bucket
