@@ -6,6 +6,7 @@ const redisClient = require('../db/redisClient');
 const queries = require('../db/queries');
 const { computeOHLCFromTicks } = require('../lib/utility');
 const { pushIndicatorMsgRT } = require('./indicatorQueuePusher');
+const { sendS5BarsToES } = require('../db/esClient');
 
 const has = Object.prototype.hasOwnProperty;
 
@@ -64,7 +65,24 @@ const job = new cron.CronJob({
         s5UnixTickIds = s5TicksTuples.map(tuple => tuple[1]);
 
         // request rows data for each unix timestamp ids
-        return Promise.map(s5UnixTickIds, queries.getTicksByIds);
+        // return Promise.map(s5UnixTickIds, queries.getTicksByIds);
+
+        // Break down getTicksByIds operations into chunks of 5 - to solve pg too many clients issue
+        const s5UnixTickIdsByFive = _.chunk(s5UnixTickIds, 5);
+        let rowData = [];
+
+        return s5UnixTickIdsByFive.reduce((previous, current, index, array) => (
+          previous.then((rowChunks) => {
+            if (index > 0) {
+              rowData = rowData.concat(rowChunks);
+            }
+            return Promise.map(current, queries.getTicksByIds);
+          })
+        ), Promise.resolve())
+          .then((lastChunk) => {
+            rowData = rowData.concat(lastChunk);
+            return rowData;
+          });
       })
       // res => array of row data that corresponds to same position in s5UnixTimes;
       .then((results) => {
@@ -74,16 +92,15 @@ const job = new cron.CronJob({
         });
 
         // Calculate OHLC values for each set of ticks
-        const ohlcRows = rowsByPairID.map((unixRows, idx) => (
+        const ohlcRows = _.flatten(rowsByPairID.map((unixRows, idx) => (
           unixRows.map(pairRows => computeOHLCFromTicks(pairRows, s5UnixTimes[idx]))
-        ));
+        )));
 
-        return queries.addBulkS5Bars(_.flatten(ohlcRows));
+        return queries.addBulkS5Bars(ohlcRows);
       })
       .then((newBars) => {
-        console.log(newBars);
         const newIndicators = newBars.map((bar) => {
-          return {
+          const output = {
             instrument: idPairs[bar.id_pairs],
             dt: bar.dt,
             ticks: bar.ticks,
@@ -97,6 +114,17 @@ const job = new cron.CronJob({
             ask_o: bar.ask_o,
             ask_c: bar.ask_c,
             ask_v: bar.ask_v };
+
+          // Send s5bars data to elasticsearch
+          sendS5BarsToES(output)
+            .then((res) => {
+              console.log('s5bars sent to Elasticsearch', res);
+            })
+            .catch((err) => {
+              console.error('s5bars failed to sent to Elasticsearch');
+            });
+
+          return output;
         });
         // Push new indicators on to Indicator Queue
         return pushIndicatorMsgRT(newIndicators, 'realtime');
