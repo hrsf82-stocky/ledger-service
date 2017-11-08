@@ -13,9 +13,10 @@ module.exports = {
     },
     pool: {
       min: 2,
-      max: 50
+      max: 50,
+      requestTimeout: 9900
     },
-    acquireConnectionTimeout: 3000,
+    acquireConnectionTimeout: 10000,
     migrations: {
       directory: __dirname + '/db/migrations'
     },
@@ -35,9 +36,10 @@ module.exports = {
     },
     pool: {
       min: 2,
-      max: 50
+      max: 50,
+      requestTimeout: 9900
     },
-    acquireConnectionTimeout: 3000,
+    acquireConnectionTimeout: 10000,
     migrations: {
       directory: __dirname + '/db/migrations'
     },
@@ -51,9 +53,10 @@ module.exports = {
     connection: process.env.DATABASE_URL,
     pool: {
       min: 2,
-      max: 50
+      max: 50,
+      requestTimeout: 9900
     },
-    acquireConnectionTimeout: 3000,
+    acquireConnectionTimeout: 10000,
     migrations: {
       directory: __dirname + '/db/migrations'
     },

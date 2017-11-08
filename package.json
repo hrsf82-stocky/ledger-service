@@ -42,6 +42,7 @@
     "moment": "^2.19.1",
     "morgan": "^1.9.0",
     "node-schedule": "^1.2.5",
+    "node-statsd": "^0.1.1",
     "path": "^0.12.7",
     "pg": "^7.3.0",
     "pg-copy-streams": "^1.2.0",

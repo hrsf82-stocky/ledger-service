@@ -3,8 +3,8 @@ const { ESHOST } = require('../config.js');
 
 const client = new elasticsearch.Client({
   host: process.env.ESHOST || ESHOST,
-  httpAuth: 'elastic:changeme',
-  log: 'trace'
+  httpAuth: 'elastic:changeme'
+  // log: 'trace'
 });
 
 client.ping({
