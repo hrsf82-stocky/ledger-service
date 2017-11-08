@@ -26,6 +26,7 @@ const pushIndicatorMsgRT = (payload, type) => {
     })
     .catch((err) => {
       console.log('Indicator Queue - Realtime Message Sent Error', err);
+      throw new Error('Indicator Queue (realtime) Pusher Error');
     });
 };
 
@@ -57,6 +58,7 @@ const pushIndicatorMsgHist = (payload, type, instrument, requestMsgId) => {
     })
     .catch((err) => {
       console.log('Indicator Queue - Historical OHLC Message Sent Error', err);
+      throw new Error('Indicator Queue (historical) Pusher Error');
     });
 };
 

@@ -8,7 +8,7 @@ const queries = require('../db/queries');
 const job = new cron.CronJob({
   cronTime: '00 01 00 * * *',
   start: true,
-  runOnInit: true,
+  runOnInit: false,
   timeZone: 'America/Los_Angeles',
   onTick: () => {
     console.log('Materialized View Refresh Worker Ticked at', moment().toISOString());
