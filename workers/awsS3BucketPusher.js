@@ -7,15 +7,6 @@ AWS.config.setPromisesDependency(require('bluebird'));
 // Create S3 service object
 const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
 
-// Call S3 to list current buckets
-// s3.listBuckets((err, data) => {
-//   if (err) {
-//     console.log('Error', err);
-//   } else {
-//     console.log('Bucket List', data.Buckets);
-//   }
-// });
-
 const uploadFileToS3 = (key, body) => {
   const uploadParams = {
     Bucket: S3HistBucket,

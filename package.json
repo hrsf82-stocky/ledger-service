@@ -16,7 +16,11 @@
     "start": "node index.js",
     "dev-start": "nodemon --ignore tests/ index.js",
     "lint": "eslint ./",
-    "test": "mocha --reporter nyan --recursive --exit test; RES=$?; kill %1; exit $RES"
+    "test": "mocha --reporter nyan --recursive --exit test; RES=$?; kill %1; exit $RES",
+    "price-poll": "cd workers && node priceQueuePoll.js",
+    "hist-poll": "cd workers && node histQueuePoll.js",
+    "s5bars-worker": "cd workers && node indicatorQueueWorker.js",
+    "mviews-worker": "cd workers && node refreshMviewsWorker.js"
   },
   "repository": {
     "type": "git",

@@ -13,7 +13,7 @@ const app = Consumer.create({
   waitTimeSeconds: 15,
   sqs: new AWS.SQS(),
   handleMessage: (message, done) => {
-    console.log(message.MessageId);
+    // console.log(message.MessageId);
     // console.log(message.Attributes);
     // console.log(message.MessageAttributes);
     const price = JSON.parse(message.Body).payload;
@@ -33,6 +33,8 @@ app.on('error', (err) => {
   console.error(err.message);
 });
 
-app.start();
+if (!module.parent) {
+  app.start();
+}
 
 module.exports = app;

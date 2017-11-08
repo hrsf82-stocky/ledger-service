@@ -13,19 +13,20 @@ const app = Consumer.create({
   waitTimeSeconds: 15,
   sqs: new AWS.SQS(),
   handleMessage: (message, done) => {
-    console.log(message.MessageId);
+    // console.log(message.MessageId);
     // console.log(message.Attributes);
     // console.log(message.MessageAttributes);
     const histRequest = JSON.parse(message.Body).payload;
-    histRequest['messageID'] = message.MessageId;
+    histRequest.messageID = message.MessageId;
+
     console.log(histRequest);
 
     histProcessor(histRequest)
-      .then((res) => done())
+      .then(res => done())
       .catch((err) => {
         console.error(err);
         done();
-      })
+      });
   }
 });
 
@@ -33,6 +34,8 @@ app.on('error', (err) => {
   console.error(err.message);
 });
 
-app.start();
+if (!module.parent) {
+  app.start();
+}
 
 module.exports = app;
