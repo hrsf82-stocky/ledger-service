@@ -3,12 +3,12 @@ const path = require('path');
 const csv = require('csv');
 const AWS = require('aws-sdk');
 const { PriceQueueURL } = require('../config.js');
-const resetSchemaSeeds = require('../db/generator/resetSchemaSeeds');
+// const resetSchemaSeeds = require('../db/generator/resetSchemaSeeds');
 
 AWS.config.loadFromPath('../config.json');
 
 const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
-const csvFilePath = path.join(__dirname, '/EURUSD-Sample-Prices.csv');
+const csvFilePath = path.join(__dirname, '/GBPUSD-2017_03_20-2017_03_20.csv');
 const instruments = ['EURUSD', 'GBPUSD', 'USDCAD', 'USDCHF', 'USDJPY', 'EURGBP', 'EURCHF', 'AUDUSD', 'EURJPY', 'GBPJPY'];
 
 const parseCVSPrices = (path, callback) => {
@@ -89,26 +89,27 @@ const pushNewPrice = ({ instrument, time, bid, ask, bid_vol, ask_vol }, done) =>
 
 
 const runPricePusher = (done) => {
-  resetSchemaSeeds()
-    .then(() => {
-      parseCVSPrices(csvFilePath, (priceData) => {
-        let i = 0;
+  // resetSchemaSeeds()
+  // .then(() => {
+  // })
+  // .catch(console.error);
 
-        setInterval(() => {
-          const priceTick = priceData[i];
-          priceTick.instrument = instruments[Math.floor(Math.random() * 10)];
-          console.log(priceData[i]);
+  parseCVSPrices(csvFilePath, (priceData) => {
+    let i = 0;
 
-          pushNewPrice(priceTick, () => {
-            i += 1;
-            if (i === priceData.length) {
-              done();
-            }
-          });
-        }, 100);
+    setInterval(() => {
+      const priceTick = priceData[i];
+      priceTick.instrument = instruments[Math.floor(Math.random() * 10)];
+      console.log(priceData[i]);
+
+      pushNewPrice(priceTick, () => {
+        i += 1;
+        if (i === priceData.length) {
+          done();
+        }
       });
-    })
-    .catch(console.error);
+    }, 100);
+  });
 };
 
 runPricePusher(() => console.log('Finished pushing all price data'));

@@ -16,7 +16,8 @@ const app = Consumer.create({
     // console.log(message.MessageId);
     // console.log(message.Attributes);
     // console.log(message.MessageAttributes);
-    const histRequest = JSON.parse(message.Body).payload;
+    const { payload } = JSON.parse(message.Body);
+    const histRequest = Array.isArray(payload) ? payload[0] : payload;
     histRequest.messageID = message.MessageId;
 
     console.log(histRequest);
