@@ -19,7 +19,7 @@ const params = {
   ],
   QueueUrl: process.env.PriceQueueURL || PriceQueueURL,
   VisibilityTimeout: 120,
-  WaitTimeSeconds: 15
+  WaitTimeSeconds: 10
 };
 
 const deleteSQSMessage = (message) => {

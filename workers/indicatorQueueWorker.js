@@ -71,7 +71,7 @@ const job = new cron.CronJob({
         // return Promise.map(s5UnixTickIds, queries.getTicksByIds);
 
         // Break down getTicksByIds operations into chunks of 5 - to solve pg too many clients issue
-        const s5UnixTickIdsByFive = _.chunk(s5UnixTickIds, 5);
+        const s5UnixTickIdsByFive = _.chunk(s5UnixTickIds, 10);
         let rowData = [];
 
         return s5UnixTickIdsByFive.reduce((previous, current, index, array) => (
@@ -149,6 +149,9 @@ const job = new cron.CronJob({
           statsDClient.increment('.ledger.worker.s5bars.fail');
           statsDClient.timing('.ledger.worker.s5bars.fail.latency_ms', Date.now() - start);
           console.error(err.stack);
+          redisClient.zremrangebyscoreAsync(redisSSKey, 0, currentUnix)
+            .then(reply => console.log(`${reply} Duplicate Ticks Deleted From Redis`))
+            .catch(console.error);
         }
       });
   }
