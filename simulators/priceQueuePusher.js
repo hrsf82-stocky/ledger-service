@@ -8,7 +8,7 @@ const { PriceQueueURL } = require('../config.js');
 AWS.config.loadFromPath('../config.json');
 
 const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
-const csvFilePath = path.join(__dirname, '/GBPUSD-2017_03_20-2017_03_20.csv');
+const csvFilePath = path.join(__dirname, '../../prices/price-ticks.csv');
 const instruments = ['EURUSD', 'GBPUSD', 'USDCAD', 'USDCHF', 'USDJPY', 'EURGBP', 'EURCHF', 'AUDUSD', 'EURJPY', 'GBPJPY'];
 
 const parseCVSPrices = (path, callback) => {
