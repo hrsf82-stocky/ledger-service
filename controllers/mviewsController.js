@@ -3,17 +3,25 @@ const queries = require('../db/queries');
 module.exports = {
   get: (req, res, next) => {
     queries.getAllMviews()
-      .then((results) => {
-        const mviews = results.map(item => item.oid);
+      .then((result) => {
+        const mviews = result.map(item => item.oid);
         res.status(200).json(mviews);
       })
       .catch(err => next(err));
   },
 
   post: (req, res, next) => {
-    queries.createMviewCombos()
-      .then(result => res.status(201).json(result))
-      .catch(err => next(err));
+    const { pairName, granularity, start, withData } = req.body;
+
+    if (pairName) {
+      queries.addMviewByPairName(pairName, granularity, start, withData)
+        .then(result => res.status(201).json(result))
+        .catch(err => next(err));
+    } else {
+      queries.createMviewCombos()
+        .then(result => res.status(201).json(result))
+        .catch(err => next(err));
+    }
   },
 
   delete: (req, res, next) => {
