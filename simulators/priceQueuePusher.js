@@ -55,22 +55,6 @@ const pushNewPrice = ({ instrument, time, bid, ask, bid_vol, ask_vol }, done) =>
       instrument: {
         DataType: 'String',
         StringValue: instrument || 'EURUSD'
-      },
-      bid: {
-        DataType: 'Number',
-        StringValue: bid
-      },
-      ask: {
-        DataType: 'Number',
-        StringValue: ask
-      },
-      bid_vol: {
-        DataType: 'Number',
-        StringValue: bid_vol
-      },
-      ask_vol: {
-        DataType: 'Number',
-        StringValue: ask_vol
       }
     },
     MessageBody: JSON.stringify({ payload }),
@@ -99,7 +83,8 @@ const runPricePusher = (done) => {
 
     setInterval(() => {
       const priceTick = priceData[i];
-      priceTick.instrument = instruments[Math.floor(Math.random() * 10)];
+      priceTick.instrument = 'EURUSD';
+      // priceTick.instrument = instruments[Math.floor(Math.random() * 10)];
       console.log(priceData[i]);
       i += 1;
 
@@ -108,8 +93,37 @@ const runPricePusher = (done) => {
           done();
         }
       });
-    }, 1000);
+    }, 500);
   });
 };
 
-runPricePusher(() => console.log('Finished pushing all price data'));
+let bid = 1.555;
+let ask;
+
+const runRTPricePusher = (tickCount, done) => {
+  let count = 0;
+
+  const pushMsgInterval = setInterval(() => {
+    const time = new Date().toISOString();
+    const instrument = instruments[Math.floor(Math.random() * 10)];
+    bid = parseFloat((bid + (Math.random() * 0.0001 * (Math.random() > 0.5 ? 1 : -1))).toFixed(5));
+    ask = parseFloat((bid + (Math.random() * 0.001)).toFixed(5));
+    const bid_vol = Number.parseInt(Math.random() * 500000, 10);
+    const ask_vol = Number.parseInt(Math.random() * 500000, 10);
+    count += 1;
+
+    pushNewPrice({ instrument, time, bid, ask, bid_vol, ask_vol }, () => {
+      console.log(count);
+      if (count === tickCount) {
+        clearInterval(pushMsgInterval);
+        done();
+      }
+    });
+  }, 100);
+};
+
+const ticksToPush = +process.argv[2] || 500;
+
+runRTPricePusher(ticksToPush, () => console.log(`Finished pull all RT ${ticksToPush} price ticks`));
+
+// runPricePusher(() => console.log('Finished pushing all price data'));
