@@ -7,6 +7,7 @@ const queries = require('../db/queries');
 const { computeOHLCFromTicks } = require('../lib/utility');
 const { pushIndicatorMsgRT } = require('./indicatorQueuePusher');
 const { sendS5BarsToES } = require('../db/esClient');
+const statsDClient = require('../db/statsDClient');
 
 const has = Object.prototype.hasOwnProperty;
 
@@ -18,6 +19,8 @@ const job = new cron.CronJob({
   start: false,
   timeZone: 'America/Los_Angeles',
   onTick: () => {
+    const start = Date.now();
+    statsDClient.increment('.ledger.worker.s5bars.received');
     console.log('Indicator Queue Worker Ticked at', moment().toISOString());
 
     const redisSSKey = 's5bars';
@@ -135,9 +138,14 @@ const job = new cron.CronJob({
       })
       .then((reply) => {
         // Successiful worker operations
+        statsDClient.increment('.ledger.worker.s5bars.success');
+        statsDClient.timing('.ledger.worker.s5bars.success.latency_ms', Date.now() - start);
         console.log(reply);
       })
       .catch((err) => {
+        statsDClient.increment('.ledger.worker.s5bars.fail');
+        statsDClient.timing('.ledger.worker.s5bars.fail.latency_ms', Date.now() - start);
+
         if (err.name === 'RangeError') {
           console.error(err.message);
         } else {
