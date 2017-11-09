@@ -143,12 +143,11 @@ const job = new cron.CronJob({
         console.log(reply);
       })
       .catch((err) => {
-        statsDClient.increment('.ledger.worker.s5bars.fail');
-        statsDClient.timing('.ledger.worker.s5bars.fail.latency_ms', Date.now() - start);
-
         if (err.name === 'RangeError') {
           console.error(err.message);
         } else {
+          statsDClient.increment('.ledger.worker.s5bars.fail');
+          statsDClient.timing('.ledger.worker.s5bars.fail.latency_ms', Date.now() - start);
           console.error(err.stack);
         }
       });
