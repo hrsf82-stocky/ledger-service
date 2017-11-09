@@ -83,5 +83,5 @@ const loadMonthlyData = (year, month, day) => {
     .catch(console.error);
 };
 
-loadMonthlyData(2017, 11, 1);
+loadMonthlyData(2017, 1, 1);
 
