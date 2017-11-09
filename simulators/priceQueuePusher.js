@@ -101,14 +101,14 @@ const runPricePusher = (done) => {
       const priceTick = priceData[i];
       priceTick.instrument = instruments[Math.floor(Math.random() * 10)];
       console.log(priceData[i]);
+      i += 1;
 
       pushNewPrice(priceTick, () => {
-        i += 1;
         if (i === priceData.length) {
           done();
         }
       });
-    }, 100);
+    }, 1000);
   });
 };
 

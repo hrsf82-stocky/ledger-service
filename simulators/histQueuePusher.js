@@ -43,9 +43,9 @@ const runHistPusher = (cycleCount, done) => {
     const granularity = granularities[Math.floor(Math.random() * granularities.length)];
     const type = types[Math.floor(Math.random() * types.length)];
     const start = getRandomDate(new Date(2017, 0, 1), new Date()).toISOString();
+    count += 1;
 
     pushNewHist({ instrument, type, granularity, start }, () => {
-      count += 1;
       console.log(count);
       if (count === cycleCount) {
         clearInterval(pushMsgInterval);
@@ -55,4 +55,4 @@ const runHistPusher = (cycleCount, done) => {
   }, 100);
 };
 
-runHistPusher(10, () => console.log('Finished pushing all Histrical Indicator Queue Requests'));
+runHistPusher(50, () => console.log('Finished pushing all Histrical Indicator Queue Requests'));
