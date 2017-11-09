@@ -2,41 +2,45 @@ const queries = require('../db/queries');
 
 module.exports = {
   get: (req, res, next) => {
-    // const pairID = req.query.id;
-
-    // if (pairID !== undefined) {
-    //   queries.getPair({ id: pairID })
-    //     .then(pair => res.status(200).json(pair))
-    //     .catch(err => next(err));
-    // } else {
-    //   queries.getAllPairs()
-    //     .then(pairs => res.status(200).json(pairs))
-    //     .catch(err => next(err));
-    // }
+    queries.getAllMviews()
+      .then((res) => {
+        const mviews = res.map(item => item.oid);
+        res.status(200).json(mviews);
+      })
+      .catch(err => next(err));
   },
 
   post: (req, res, next) => {
-    // const { name, major } = req.body;
-
-    // queries.addPair({ name, major })
-    //   .then(newPair => res.status(201).json(newPair))
-    //   .catch(err => next(err));
+    queries.createMviewCombos()
+      .then(result => res.status(201).json(result))
+      .catch(err => next(err));
   },
 
   delete: (req, res, next) => {
-    // const pairID = req.params.id;
+    const mviewName = req.params.name;
 
-    // queries.deletePairById(pairID)
-    //   .then(result => res.status(200).json(result))
-    //   .catch(err => next(err));
+    if (mviewName) {
+      queries.deleteMviewByName(mviewName)
+        .then(result => res.status(200).json(result))
+        .catch(err => next(err));
+    } else {
+      queries.deleteAllMviews()
+        .then(result => res.status(200).json(result))
+        .catch(err => next(err));
+    }
   },
 
   patch: (req, res, next) => {
-    // const pairID = req.params.id;
-    // const updates = req.body;
+    const mviewName = req.params.name;
 
-    // queries.updatePairById(pairID, updates)
-    //   .then(updatedPair => res.status(200).json(updatedPair))
-    //   .catch(err => next(err));
+    if (mviewName) {
+      queries.refreshMviewByName(mviewName, true)
+        .then(result => res.status(200).json(result))
+        .catch(err => next(err));
+    } else {
+      queries.refreshAllMviews()
+        .then(result => res.status(200).json(result))
+        .catch(err => next(err));
+    }
   }
 };
