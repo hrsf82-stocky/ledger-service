@@ -52,7 +52,7 @@ const runHistPusher = (cycleCount, done) => {
         done();
       }
     });
-  }, 100);
+  }, 500);
 };
 
 runHistPusher(50, () => console.log('Finished pushing all Histrical Indicator Queue Requests'));

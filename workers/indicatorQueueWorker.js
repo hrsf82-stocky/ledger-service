@@ -27,7 +27,7 @@ const job = new cron.CronJob({
     // Local cache for pair id and instrument name mapping
     const idPairs = {};
     // Current Unix Time
-    const currentUnix = moment().valueOf();
+    const currentUnix = moment().valueOf() - 6000;
     // Array of unique 5 sec Unix timestamps
     let s5UnixTimes;
     // Array of array of tick ids that corresponds to same position in s5UnixTimes;
