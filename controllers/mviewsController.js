@@ -32,13 +32,14 @@ module.exports = {
 
   patch: (req, res, next) => {
     const mviewName = req.params.name;
+    const { concurrent } = req.body;
 
     if (mviewName) {
-      queries.refreshMviewByName(mviewName, true)
+      queries.refreshMviewByName(mviewName, !!concurrent)
         .then(result => res.status(200).json(result))
         .catch(err => next(err));
     } else {
-      queries.refreshAllMviews()
+      queries.refreshAllMviews(!!concurrent)
         .then(result => res.status(200).json(result))
         .catch(err => next(err));
     }

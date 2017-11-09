@@ -59,7 +59,10 @@ const fetchOandaPairCandles = (pair, count, from, price = 'BA', granularity = 'S
 const loadBulkMajorPairsCandles = from => (
   Promise.map(Object.keys(pairIdMapping), pair => fetchOandaPairCandles(pair, 5000, from, 'BA', 'S5'))
     .then(pairsCandles => pairsCandles.map((ele, i) => formatCandlesData(ele, i + 1)))
-    .then(formattedPairsCandles => Promise.map(formattedPairsCandles, db.insertBulkOHLC))
+    .then(formattedPC => (
+      formattedPC.reduce((prev, cur) => prev.then(() => db.insertBulkOHLC(cur)), Promise.resolve())
+      // Promise.map(formattedPC, db.insertBulkOHLC))
+    ))
     .then(results => console.log('Bulk inserted all major pairs 5sec OHLC data.'))
     .catch(console.error)
 );
