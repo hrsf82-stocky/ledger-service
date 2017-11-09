@@ -3,8 +3,8 @@ const queries = require('../db/queries');
 module.exports = {
   get: (req, res, next) => {
     queries.getAllMviews()
-      .then((res) => {
-        const mviews = res.map(item => item.oid);
+      .then((results) => {
+        const mviews = results.map(item => item.oid);
         res.status(200).json(mviews);
       })
       .catch(err => next(err));
