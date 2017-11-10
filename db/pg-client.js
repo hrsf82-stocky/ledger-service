@@ -4,11 +4,11 @@ const copyFrom = require('pg-copy-streams').from;
 const { PGHOST, PGUSER, PGPW, PGDB, PGPORT } = require('../config.js');
 
 const pool = new Pool({
-  host: PGHOST,
-  database: PGDB,
-  user: PGUSER,
-  password: PGPW,
-  port: PGPORT,
+  host: process.env.PGHOST || PGHOST,
+  database: process.env.PGDB || PGDB,
+  user: process.env.PGUSER || PGUSER,
+  password: process.env.PGPW || PGPW,
+  port: process.env.PGPORT || PGPORT,
   max: 25,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000

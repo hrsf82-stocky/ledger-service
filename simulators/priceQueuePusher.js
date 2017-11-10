@@ -58,7 +58,7 @@ const pushNewPrice = ({ instrument, time, bid, ask, bid_vol, ask_vol }, done) =>
       }
     },
     MessageBody: JSON.stringify({ payload }),
-    QueueUrl: PriceQueueURL
+    QueueUrl: process.env.PriceQueueURL || PriceQueueURL
   };
 
   sqs.sendMessage(params, (err, data) => {

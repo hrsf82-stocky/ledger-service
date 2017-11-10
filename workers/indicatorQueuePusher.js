@@ -16,7 +16,7 @@ const pushIndicatorMsgRT = (payload, type) => {
       }
     },
     MessageBody: JSON.stringify({ payload }),
-    QueueUrl: OHLCQueueURL
+    QueueUrl: process.env.OHLCQueueURL || OHLCQueueURL
   };
 
   return sqs.sendMessage(params).promise()
@@ -48,7 +48,7 @@ const pushIndicatorMsgHist = (payload, type, instrument, requestMsgId) => {
       }
     },
     MessageBody: JSON.stringify({ payload }),
-    QueueUrl: OHLCQueueURL
+    QueueUrl: process.env.OHLCQueueURL || OHLCQueueURL
   };
 
   return sqs.sendMessage(params).promise()
