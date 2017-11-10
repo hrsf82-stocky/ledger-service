@@ -6,8 +6,8 @@ Promise.promisifyAll(redis.RedisClient.prototype);
 Promise.promisifyAll(redis.Multi.prototype);
 
 const redisClient = redis.createClient({
-  host: REDISHOST,
-  port: REDISPORT,
+  host: process.env.REDISHOST || REDISHOST,
+  port: process.env.REDISPORT || REDISPORT,
   retry_strategy: (options) => {
     if (options.error && options.error.code === 'ECONNREFUSED') {
       // End reconnecting on a specific error and flush all commands with

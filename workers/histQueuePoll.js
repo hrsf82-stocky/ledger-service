@@ -83,7 +83,7 @@ const pollHistQueueMessage = () => {
 
 // SQS Consumer Implementation - not fast enough
 // const app = Consumer.create({
-//   queueUrl: HistQueueURL,
+//   queueUrl: process.env.HistQueueURL || HistQueueURL,
 //   attributeNames: ['All'],
 //   messageAttributeNames: ['All'],
 //   visibilityTimeout: 120,

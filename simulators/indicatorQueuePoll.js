@@ -5,7 +5,7 @@ const { OHLCQueueURL } = require('../config.js');
 AWS.config.loadFromPath('../config.json');
 
 const app = Consumer.create({
-  queueUrl: OHLCQueueURL,
+  queueUrl: process.env.OHLCQueueURL || OHLCQueueURL,
   attributeNames: ['All'],
   messageAttributeNames: ['All'],
   visibilityTimeout: 120,

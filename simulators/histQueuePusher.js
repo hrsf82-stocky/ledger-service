@@ -21,7 +21,7 @@ const pushNewHist = ({ instrument, type, granularity, start }, done) => {
       }
     },
     MessageBody: JSON.stringify({ payload }),
-    QueueUrl: HistQueueURL
+    QueueUrl: process.env.HistQueueURL || HistQueueURL
   };
 
   sqs.sendMessage(params, (err, data) => {

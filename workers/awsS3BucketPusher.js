@@ -9,7 +9,7 @@ const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
 
 const uploadFileToS3 = (key, body) => {
   const uploadParams = {
-    Bucket: S3HistBucket,
+    Bucket: process.env.S3HistBucket || S3HistBucket,
     Key: key,
     Body: JSON.stringify(body),
     ACL: 'public-read'
