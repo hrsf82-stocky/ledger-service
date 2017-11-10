@@ -1,15 +1,15 @@
 // Update with your config settings.
-const { PGHOST, PGUSER, PGPW, PGDB, PGDBTEST, PGPORT } = require('./config.js');
+const { PGHOST, PGUSER, PGPW, PGDB, PGDBTEST, RDSPGHOST, PGPORT } = require('./config.js');
 
 module.exports = {
   test: {
     client: 'pg',
     connection: {
-      host: PGHOST,
-      database: PGDBTEST,
-      port: PGPORT,
-      user: PGUSER,
-      password: PGPW
+      host: process.env.PGHOST || PGHOST,
+      database: process.env.PGDBTEST || PGDBTEST,
+      port: process.env.PGPORT || PGPORT,
+      user: process.env.PGUSER || PGUSER,
+      password: process.env.PGPW || PGPW
     },
     pool: {
       min: 2,
@@ -28,11 +28,11 @@ module.exports = {
   development: {
     client: 'pg',
     connection: {
-      host: PGHOST,
-      database: PGDB,
-      port: PGPORT,
-      user: PGUSER,
-      password: PGPW
+      host: process.env.PGHOST || PGHOST,
+      database: process.env.PGDB || PGDB,
+      port: process.env.PGPORT || PGPORT,
+      user: process.env.PGUSER || PGUSER,
+      password: process.env.PGPW || PGPW
     },
     pool: {
       min: 2,
@@ -50,7 +50,13 @@ module.exports = {
 
   production: {
     client: 'pg',
-    connection: process.env.DATABASE_URL,
+    connection: {
+      host: process.env.RDSPGHOST || RDSPGHOST,
+      database: process.env.PGDB || PGDB,
+      port: process.env.PGPORT || PGPORT,
+      user: process.env.PGUSER || PGUSER,
+      password: process.env.PGPW || PGPW
+    },
     pool: {
       min: 2,
       max: 50,
