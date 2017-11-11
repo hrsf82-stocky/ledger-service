@@ -3,7 +3,7 @@
 
 Ledger is a self-contained and scalable web service built for the MacD project, which is a Forex trading platform clone utilizing service-oriented architecture techniques.
 
-# Table of Contents
+## Table of Contents
 
 1. [Features](#features)
 1. [Development](#development)
