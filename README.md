@@ -7,7 +7,7 @@ Ledger is a self-contained and scalable web service built for the MacD project, 
 
 1. [Features](#features)
 1. [Development](#development)
-    1. [Installing Dependencies](#installing-dependencies)
+    1. [Install Dependencies](#install-dependencies)
     1. [Usage](#usage)
 1. [Requirements](#requirements)
 1. [Roadmap](#roadmap)
@@ -54,12 +54,12 @@ Start Histical Request Poll Worker:
 $ npm run hist-poll
 ```
 
-Start OHLC 5-second Interval Worker:
+Start 5 Sec Interval OHLC Worker:
 ```sh
 $ npm run s5bars-worker
 ```
 
-Start Materialized Views Refresh Worker:
+Start Materialized Views Auto Refresh Worker:
 ```sh
 $ npm run mviews-worker
 ```
