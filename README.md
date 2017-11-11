@@ -7,7 +7,7 @@ Ledger is a self-contained and scalable web service built for the MacD project, 
 
 1. [Features](#features)
 1. [Development](#development)
-    1. [Installing Dependencies](#installing-dependencies)
+    1. [Install Dependencies](#install-dependencies)
     1. [Usage](#usage)
 1. [Requirements](#requirements)
 1. [Roadmap](#roadmap)
